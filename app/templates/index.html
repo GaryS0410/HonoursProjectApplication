@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <meta charset="UTF-8" />
+        <title> Test Home Page</title>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% block content %}
+        {% endblock %}
+        <h1> Testing the Webcam</h1>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="snap">Start Session</button>
+        <button id="stop">Stop Session</button>
+        <canvas id="canvas" width="640" height="480"></canvas>
+        <script src="..\static\js\camera.js"></script>
+
+        <h2> Prediction </h2>
+        <p id="prediction">{{prediction}}</p>
+    </body>
+</html>
