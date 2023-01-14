@@ -2,19 +2,21 @@ let canvas = document.querySelector('#canvas');
 let context = canvas.getContext('2d');
 let video = document.querySelector('#video');
 
+var intervalId;
+
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
         video.srcObject = stream;
         video.play();
     })
-}
+} 
 
 function upload(file){
     var formdata = new FormData();
     formdata.append('snap', file);
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://127.0.0.1:5000/saveImage', true);
+    xhr.open('POST', '/', true);
     xhr.onload = function() {
         if (this.status == 200) {
             console.log(this.response);
@@ -32,5 +34,10 @@ function takePhoto() {
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    setInterval(takePhoto, 1500)
+    intervalId = setInterval(takePhoto, 3000); 
+})
+
+document.getElementById('stop').addEventListener('click', () => {
+    clearInterval(intervalId);
+    alert('Session Stopped');
 })
