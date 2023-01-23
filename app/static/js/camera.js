@@ -2,8 +2,6 @@ let canvas = document.querySelector('#canvas');
 let context = canvas.getContext('2d');
 let video = document.querySelector('#video');
 
-var intervalId;
-
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
         video.srcObject = stream;
@@ -33,18 +31,6 @@ function upload(file){
     })
 }
 
-function getPrediction() {
-    fetch('/predict')
-    .then((response) => {
-        return response.json();
-    })
-    .then(data => {
-        const display = document.getElementById("results");
-        for(let i = 0; i < data.length; i++)
-            display.innerHTML += "Picture " + (i+1) + ": " + data[i] + "<br>";        
-    })
-}
-
 function takePhoto() {
     context.drawImage(video, 0, 0, 640, 480)
     canvas.toBlob(upload, 'image/jpeg')
@@ -52,10 +38,4 @@ function takePhoto() {
 
 document.getElementById('snap').addEventListener('click', () => {
     intervalId = setInterval(takePhoto, 3000); 
-})
-
-document.getElementById('stop').addEventListener('click', () => {
-    clearInterval(intervalId);
-    alert('Session Stopped');
-    getPrediction();
 })
