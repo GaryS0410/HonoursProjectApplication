@@ -22,18 +22,18 @@ function upload(file){
     })
     .then(response => response.blob())
     .then(data => {
-        alert('Got Photo')
-        console.log(data)
+        alert('Got Photo');
+        console.log(data);
     })
     .catch(error => {
-        alert('Could not get photo')
-        console.error(error)
+        alert('Could not get photo');
+        console.error(error);
     })
 }
 
 function takePhoto() {
-    context.drawImage(video, 0, 0, 640, 480)
-    canvas.toBlob(upload, 'image/jpeg')
+    context.drawImage(video, 0, 0, 640, 480);
+    canvas.toBlob(upload, 'image/jpeg', 0.95);
 }
 
 document.getElementById('snap').addEventListener('click', () => {
