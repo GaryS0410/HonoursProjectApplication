@@ -32,20 +32,11 @@ function getPrediction() {
                 responsive: true
             },
         });
-    });
+    })
+    .catch((error) => {
+        console.log('No photo could be captured.')
+    })
 }
-
-// function getPrediction() {
-//     fetch('/predict')
-//     .then((response) => {
-//         return response.json();
-//     })
-//     .then(data => {
-//         const display = document.getElementById("results");
-//         for(let i = 0; i < data.length; i++)
-//             display.innerHTML += "Picture " + (i+1) + ": " + data[i] + "<br>";        
-//     })
-// }
 
 document.getElementById('stop').addEventListener('click', () => {
     clearInterval(intervalId);
