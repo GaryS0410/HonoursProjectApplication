@@ -19,6 +19,7 @@ function getPrediction() {
         const values = Object.values(data);
 
         var display = document.getElementById('pieChartCanvas');
+        
         var emotionsChart = new Chart(display, {
             type: 'pie',
             data: {

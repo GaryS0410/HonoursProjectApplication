@@ -13,29 +13,12 @@ from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 
 image_list = np.zeros((1, 48, 48, 1))
-emotions_count = {}
 model = load_model('app\models\initalModel.h5')
 face_classifier = cv2.CascadeClassifier("app\models\haarcascade_frontalface_default.xml")
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
-# def preprocessImage(webcamImage):
-#     webcamImage = Image.open(BytesIO(webcamImage))
-
-#     webcamImage = webcamImage.convert("L")
-
-#     webcamImage = webcamImage.resize((48, 48), resample=Image.BICUBIC)
-
-#     image_array = np.array(webcamImage)
-#     image_array = image_array.astype('float32')
-#     image_array /= 255.0
-
-#     image_array = np.expand_dims(image_array, axis = 0)
-#     image_array = np.expand_dims(image_array, axis = -1)
-        
-#     return image_array
 
 def preprocessImage(webcamImage):
     webcamImage = Image.open(BytesIO(webcamImage))
@@ -69,10 +52,10 @@ def preprocessImage(webcamImage):
 
 @app.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
+    global image_list
     if request.method == 'POST':
         fs = request.files.get('snap').read()
         if fs:
-            global image_list
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
             return ('got photo')                
@@ -84,7 +67,6 @@ def startSession():
 def predict_emotion():
     if request.method == 'GET':
         global image_list
-        global emotions_count
 
         predictions = model.predict(image_list)
         classes_x = np.argmax(predictions, axis = 1)
@@ -94,14 +76,21 @@ def predict_emotion():
 
         emotion_list = emotionLabels.tolist()
         emotionNames = emotionNames.tolist()
+        emotions_count = {}
         
+        print("=======")
+        print(image_list)
+
         for i in emotion_list:
             if i in emotions_count:
                 emotions_count[i] += 1
             else: 
                 emotions_count[i] = 1 
 
+        print("=======")
         print(emotions_count)
+
+        image_list = np.zeros((1, 48, 48, 1))
 
         return jsonify(emotions_count)
 
