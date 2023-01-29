@@ -5,42 +5,38 @@
     <meta charset="UTF-8" />
     <title> FER Application - Model </title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-    </script>
-
-    <style>
-        .webcam{
-
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link rel="stylesheet" href="..\static\css\stylesheet.css">
 </head>
 
 <body>
-    {% include 'navbar.html' %}
-    {% block content %}
-    {% endblock %}
+    <nav>
+        {% include 'navbar.html' %}
+        {% block content %}
+        {% endblock %}
+    </nav>
 
-    <h1> FER Model </h1>
-
-    <div class="webcam">
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap" type="button" class="btn btn-primary">Start Session</button>
-    <button id="stop" type="button" class="btn btn-primary">Stop Session</button>
-    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+    <div class="container">
+        <div class="row">
+            <div class="col-md">
+                <h1> FER Model </h1>
+                <div class="webcam">
+                    <video id="video" width="640" height="480" autoplay></video>
+                    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+                </div>
+                <button id="snap" type="button" class="btn btn-primary">Start Session</button>
+                <button id="stop" type="button" class="btn btn-primary">Stop Session</button>
+            </div>
+            <div class="col-sm-4">
+                <h2> Emotions Chart </h2>
+                <h4 id="mostCommon">Your Most Common Emotion: </h4>
+                <div class="results" id="results"></div>
+                <canvas id="pieChartCanvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <script src="..\static\js\camera.js"></script>
     <script src="..\static\js\prediction.js"></script>
-
-    <h2> Emotions </h2>
-    <p id="emotions">{{emotions}}</p>
-    <p id="prediction">{{prediction}}</p>
-
-    <div class="results" id="results">
-    </div>
-    <canvas id="pieChartCanvas">
-
-    </canvas>
 </body>
-
 </html>

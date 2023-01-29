@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title> FER Application - Model </title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    {% block content %}
+    {% endblock %}
+
+    <h3> Login </h3>
+    <a href="{{url_for('login')}}"> Don't have an account? Click here to Register.</a>
+
+</body>
+</html>

@@ -12,14 +12,12 @@ from io import BytesIO
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 
+# GLOBAL VARIABLES
 image_list = np.zeros((1, 48, 48, 1))
-model = load_model('app\models\initalModel.h5')
-face_classifier = cv2.CascadeClassifier("app\models\haarcascade_frontalface_default.xml")
+model = load_model('app\ml_models\initalModel.h5')
+face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
+# HELPER FUNCTIONS
 def preprocessImage(webcamImage):
     webcamImage = Image.open(BytesIO(webcamImage))
     grey_image = cv2.cvtColor(np.array(webcamImage), cv2.COLOR_BGR2GRAY)
@@ -50,6 +48,11 @@ def preprocessImage(webcamImage):
             
         return grey_image
 
+# ENDPOINT FUNCTIONS
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
@@ -58,10 +61,9 @@ def startSession():
         if fs:
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
-            return ('got photo')                
+            return 'got photo'       
         else:
             return 'no photo'
-    return render_template('index.html')
 
 @app.route('/predict', methods = ['GET'])
 def predict_emotion():
@@ -77,9 +79,6 @@ def predict_emotion():
         emotion_list = emotionLabels.tolist()
         emotionNames = emotionNames.tolist()
         emotions_count = {}
-        
-        print("=======")
-        print(image_list)
 
         for i in emotion_list:
             if i in emotions_count:
@@ -87,12 +86,16 @@ def predict_emotion():
             else: 
                 emotions_count[i] = 1 
 
-        print("=======")
-        print(emotions_count)
-
         image_list = np.zeros((1, 48, 48, 1))
-
         return jsonify(emotions_count)
+
+@app.route('/login')
+def log_in():
+    return render_template('/auth/login.html')
+
+@app.route('/register')
+def register():
+    return render_template('auth/register.html')
 
 @app.route('/about')
 def about():
