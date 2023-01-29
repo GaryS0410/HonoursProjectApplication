@@ -89,14 +89,6 @@ def predict_emotion():
         image_list = np.zeros((1, 48, 48, 1))
         return jsonify(emotions_count)
 
-@app.route('/login')
-def log_in():
-    return render_template('/auth/login.html')
-
-@app.route('/register')
-def register():
-    return render_template('auth/register.html')
-
 @app.route('/about')
 def about():
     return render_template('about.html')
