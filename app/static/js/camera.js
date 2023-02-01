@@ -22,11 +22,9 @@ function upload(file){
     })
     .then(response => response.blob())
     .then(data => {
-        alert('Got Photo');
         console.log(data);
     })
     .catch(error => {
-        alert('Could not get photo');
         console.error(error);
     })
 }
@@ -37,5 +35,5 @@ function takePhoto() {
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 3000); 
+    intervalId = setInterval(takePhoto, 30000); 
 })

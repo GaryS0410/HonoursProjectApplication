@@ -1,16 +1,12 @@
-from app import app
-from flask import Flask, render_template, request, Response, jsonify, make_response
+from flask import Blueprint, render_template, request, jsonify
 import numpy as np
-import json
 from PIL import Image
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.utils import load_img
 import cv2
-import os
 from io import BytesIO
-from werkzeug.utils import secure_filename
-import matplotlib.pyplot as plt
+
+# Views.py blueprint declaration
+views = Blueprint('views', __name__)
 
 # GLOBAL VARIABLES
 image_list = np.zeros((1, 48, 48, 1))
@@ -49,11 +45,11 @@ def preprocessImage(webcamImage):
         return grey_image
 
 # ENDPOINT FUNCTIONS
-@app.route('/')
+@views.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/startSession', methods = ['GET', 'POST'])
+@views.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
     if request.method == 'POST':
@@ -65,7 +61,7 @@ def startSession():
         else:
             return 'no photo'
 
-@app.route('/predict', methods = ['GET'])
+@views.route('/predict', methods = ['GET'])
 def predict_emotion():
     if request.method == 'GET':
         global image_list
@@ -89,10 +85,10 @@ def predict_emotion():
         image_list = np.zeros((1, 48, 48, 1))
         return jsonify(emotions_count)
 
-@app.route('/about')
+@views.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/student')
+@views.route('/student')
 def student():
     return render_template('student.html')

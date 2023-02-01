@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale-=1" /> 
     <title> FER Application - Model </title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -18,7 +19,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md">
+            <div class="col-md-6">
                 <h1> FER Model </h1>
                 <div class="webcam">
                     <video id="video" width="640" height="480" autoplay></video>
@@ -27,11 +28,11 @@
                 <button id="snap" type="button" class="btn btn-primary">Start Session</button>
                 <button id="stop" type="button" class="btn btn-primary">Stop Session</button>
             </div>
-            <div class="col-sm-4">
+            <div class="col-md-6">
                 <h2> Emotions Chart </h2>
                 <h4 id="mostCommon">Your Most Common Emotion: </h4>
                 <div class="results" id="results"></div>
-                <canvas id="pieChartCanvas"></canvas>
+                <canvas id="pieChartCanvas" width="640" height="480"></canvas>
             </div>
         </div>
     </div>
@@ -39,4 +40,5 @@
     <script src="..\static\js\camera.js"></script>
     <script src="..\static\js\prediction.js"></script>
 </body>
+
 </html>

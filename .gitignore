@@ -3,3 +3,7 @@
 
 # PyCache
 /__pycache__
+app/__pycache__
+
+# Database + Instance Folder
+/instance

@@ -16,7 +16,8 @@ function displayMostCommonEmotion(data) {
     console.log(entries[0][0]);
 
     var heading = document.getElementById("mostCommon");
-    var currentText = heading.textContent;
+    heading.innerHTML = "";
+    var currentText = "Your Most Common Emotion: ";
     var newText = entries[0][0];
     heading.textContent = currentText + newText;
 }
@@ -29,7 +30,7 @@ function createPieChart(data) {
     var context = display.getContext("2d");
     context.clearRect(0, 0, display.width, display.height);
 
-    if(typeof emotionsChart !== 'undefined') {
+    if(emotionsChart) {
         emotionsChart.destory();
     }
     
