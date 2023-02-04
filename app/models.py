@@ -2,13 +2,15 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-class Emotions(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+class SessionData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(150), unique=True)
+    first_name = db.Column(db.String(50))
+    surname = db.Column(db.String(50))
+    email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(150))
-    emotion_list = db.relationship('Emotions')
+    session_data = db.relationship('SessionData')

@@ -4,6 +4,7 @@ from PIL import Image
 from tensorflow.keras.models import load_model
 import cv2
 from io import BytesIO
+from flask_login import login_required, current_user
 
 # Views.py blueprint declaration
 views = Blueprint('views', __name__)
@@ -46,6 +47,7 @@ def preprocessImage(webcamImage):
 
 # ENDPOINT FUNCTIONS
 @views.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -82,13 +84,11 @@ def predict_emotion():
             else: 
                 emotions_count[i] = 1 
 
+        print(emotions_count)
+
         image_list = np.zeros((1, 48, 48, 1))
         return jsonify(emotions_count)
 
-@views.route('/about')
+@views.route('/previous')
 def about():
-    return render_template('about.html')
-
-@views.route('/student')
-def student():
-    return render_template('student.html')
+    return render_template('previousSessions.html')

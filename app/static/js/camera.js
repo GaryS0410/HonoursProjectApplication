@@ -35,5 +35,5 @@ function takePhoto() {
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 30000); 
+    intervalId = setInterval(takePhoto, 2000); 
 })
