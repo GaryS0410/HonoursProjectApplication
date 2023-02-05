@@ -1,10 +1,27 @@
-<!DOCTYPE html>
+{% extends "navbar.html" %}
+{% block title %} Previous Session Data {% endblock %}
 
-<head>
-</head>
+{% block content %}
+<table>
+    <tr>
+        <th>Session ID</th>
+        <th>Time of Session</th>
+        <th>User ID</th>
+        <th>Emotions</th>
+    </tr>
+    {% for session in sessions %}
+    <tr>
+        <td>{{ session.id }}</td>
+        <td>{{ session.time_of_session }}</td>
+        <td>{{ session.user_id }}</td>
+        <td>
+            {% for emotion in session.emotion_data %}
+            {{ emotion.emotion_type }} ({{ emotion.emotion_instances }} instances)<br>
+            {% endfor %}
+        </td>
+        <canvas id="pieChartCanvas" width="640" height="480"></canvas>
+    </tr>
+    {% endfor %}
+</table>
 
-<body>
-    <h1>Previous Session Data</h1>
-</body>
-
-</html>
+{% endblock %}
