@@ -21,11 +21,18 @@
         <a class="navbar-brand" href="#">Honours Project Application</a>
         <div class="collapse navbar-collapse" id="navbar">
             <div class="navbar-nav">
-                <a class="nav-item nav-link" id="login" href="/">FER Model</a>
-                <a class="nav-item nav-link" id="login" href="/previous">Previous Sesssions</a>
-                <a class="nav-item nav-link" id="login" href="/login">Login</a>
-                <a class="nav-item nav-link" id="login" href="/register">Create Account</a>
-                <a class="nav-item nav-link" id="login" href="/logout">Logout</a>
+                {% if current_user.is_authenticated and current_user.is_therapist %}
+                    <a class="nav-item nav-link" id="dashboard" href="/adminDashboard"> Therapist Dashboard </a>
+                    <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                {% elif current_user.is_authenticated and not current_user.is_therapist %}
+                    <a class="nav-item nav-link" id="model" href="/">FER Model</a>
+                    <a class="nav-item nav-link" id="previousSession" href="/previous">Previous Sesssions</a>
+                    <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                {% else %}
+                    <a class="nav-item nav-link" id="model" href="/">FER Model</a>
+                    <a class="nav-item nav-link" id="registerChoice" href="/registerChoice">Create Account</a>
+                    <a class="nav-item nav-link" id="login" href="/login">Login</a>
+                {% endif %}
             </div>
         </div>
     </nav>

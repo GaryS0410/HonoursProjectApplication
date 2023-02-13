@@ -1,0 +1,11 @@
+{% extends "navbar.html" %}
+{% block title %} Register Account {% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <button><a href="{{ url_for('auth.registerPatient') }}"> Register a Patient Account </a></button>
+    <button><a href="{{ url_for('auth.registerTherapist') }}"> Register a Therapist Account </a></button>
+</div>
+
+{% endblock %}

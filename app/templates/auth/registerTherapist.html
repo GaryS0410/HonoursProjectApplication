@@ -27,18 +27,6 @@
             <input type="password" class="form-control" id="password2" name="password2"
                 placeholder="Confirm Password..." />
         </div>
-        <div class="form-group">
-            <label for="therapistList">Please select the name of your therapist:</label>
-            <select name="therapistList" id="therapistList">
-                {% if therapist_list %}
-                    {% for therapist in therapist_list %}
-                        <option value="{{ therapist.id }}">{{therapist.first_name}} {{therapist.surname}}</option>
-                    {% endfor %}
-                {% else %}
-                    <option value="noneAvailable">No Therapists Currently Available</option>
-                {% endif %}
-            </select>
-        </div>
         <br />
         <button type="submit" class="btn btn-primary" name="submitRegister" value="SubmitRegister">Submit</button>
     </form>

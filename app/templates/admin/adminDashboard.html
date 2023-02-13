@@ -1,0 +1,35 @@
+{% extends "navbar.html" %}
+{% block title %} Therapist Dashboard {% endblock %}
+
+{% block content %}
+
+<head>
+    <style>
+        #body {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<h3> Welcome to your dashboard, {{therapist}}.</h3>
+
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th>Patient Name</th>
+            <th>Patients Email</th>
+            <th>Emotion Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td> <li><a href="{{ url_for('admin_views.patientData', user_id=patient.id) }}">{{ patient.first_name }} {{ patient.surname }}</a></li></td>
+            <td> {{ patient.email}} </td>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

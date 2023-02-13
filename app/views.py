@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, flash
 import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
 import cv2
 from io import BytesIO
-
 from flask_login import login_required, current_user
+
 from . import db
 from .models import SessionData, EmotionData
 
@@ -16,6 +16,7 @@ views = Blueprint('views', __name__)
 image_list = np.zeros((1, 48, 48, 1))
 model = load_model('app\ml_models\initalModel.h5')
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
+
 
 # HELPER FUNCTIONS
 def preprocessImage(webcamImage):
@@ -98,14 +99,10 @@ def predict_emotion():
 
         print(emotions_count)
 
+        flash('Session data has been saved', category='success')
+
         image_list = np.zeros((1, 48, 48, 1))
         return jsonify(emotions_count)
-
-# @views.route('/previous')
-# @login_required
-# def displayPreviousData():
-#     sessions = SessionData.query.filter_by(user_id = current_user.id).all()
-#     return render_template('previousSessions.html', sessions = sessions)
 
 @views.route('/previous')
 @login_required
@@ -116,5 +113,5 @@ def displayPreviousData():
         emotions_count = {}
         for emotion in session.emotion_data:
             emotions_count[emotion.emotion_type] = emotion.emotion_instances
-        session_data.append({"session_id": session.id, "emotions_count": emotions_count})
+        session_data.append({"session_id": session.id, "emotions_count": emotions_count}) 
     return render_template('previousSessions.html', sessions = sessions , session_data=session_data)
