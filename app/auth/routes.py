@@ -1,13 +1,15 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import *
+from app.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
+from app import db
 from flask_login import login_user, login_required, logout_user, current_user
+
+from app.auth import bp
 
 # Auth.py blueprint declaration
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login', methods = ['GET', 'POST'])
+@bp.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -19,7 +21,7 @@ def login():
                 flash('Logged in successfully!', category ='sucess')
                 print('logged in')
                 login_user(user, remember=True)
-                return redirect(url_for('views.index'))
+                return redirect(url_for('main.index'))
             else:
                 flash('Incorrect password, try again', category='error')
         else:
@@ -28,17 +30,17 @@ def login():
 
     return render_template('auth/login.html')
 
-@auth.route('/logout')
+@bp.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
-@auth.route('/registerChoice')
+@bp.route('/registerChoice')
 def registerChoice():
     return render_template('auth/registerChoice.html')
 
-@auth.route('/registerTherapist', methods=['GET', 'POST'])
+@bp.route('/registerTherapist', methods=['GET', 'POST'])
 def registerTherapist():
     if request.method == 'POST':
         first_name = request.form.get('firstname')
@@ -65,10 +67,10 @@ def registerTherapist():
             db.session.commit()
             login_user(new_therapist, remember=True)
             flash('Account Created!', category='success')
-            return redirect(url_for('admin_views.adminDash'))
+            return redirect(url_for('admin.adminDash'))
     return render_template('auth/registerTherapist.html')
 
-@auth.route('/registerPatient', methods=['GET', 'POST'])
+@bp.route('/registerPatient', methods=['GET', 'POST'])
 def registerPatient():
     therapist_list = User.query.filter_by(is_therapist=True).all()
 
@@ -111,5 +113,5 @@ def registerPatient():
 
             login_user(new_patient, remember=True)
             flash('Account Created!', category='success')
-            return redirect(url_for('views.index'))
+            return redirect(url_for('main.index'))
     return render_template('auth/register.html', therapist_list = therapist_list)

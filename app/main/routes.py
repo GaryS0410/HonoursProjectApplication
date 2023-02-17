@@ -6,11 +6,9 @@ import cv2
 from io import BytesIO
 from flask_login import login_required, current_user
 
-from . import db
-from .models import SessionData, EmotionData
-
-# Views.py blueprint declaration
-views = Blueprint('views', __name__)
+from app import db
+from app.models import SessionData, EmotionData
+from app.main import bp
 
 # GLOBAL VARIABLES
 image_list = np.zeros((1, 48, 48, 1))
@@ -50,12 +48,12 @@ def preprocessImage(webcamImage):
         return grey_image
 
 # ENDPOINT FUNCTIONS
-@views.route('/')
+@bp.route('/')
 @login_required
 def index():
     return render_template('index.html', user=current_user)
 
-@views.route('/startSession', methods = ['GET', 'POST'])
+@bp.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
     if request.method == 'POST':
@@ -67,7 +65,7 @@ def startSession():
         else:
             return 'no photo'
 
-@views.route('/predict', methods = ['GET'])
+@bp.route('/predict', methods = ['GET'])
 def predict_emotion():
     if request.method == 'GET':
         global image_list
@@ -104,7 +102,7 @@ def predict_emotion():
         image_list = np.zeros((1, 48, 48, 1))
         return jsonify(emotions_count)
 
-@views.route('/previous')
+@bp.route('/previous')
 @login_required
 def displayPreviousData():
     sessions = SessionData.query.filter_by(user_id = current_user.id).all()

@@ -26,7 +26,7 @@
     <tbody>
         {% for patient in patients %}
         <tr>
-            <td> <li><a href="{{ url_for('admin_views.patientData', user_id=patient.id) }}">{{ patient.first_name }} {{ patient.surname }}</a></li></td>
+            <td> <li><a href="{{ url_for('admin.patientData', user_id=patient.id) }}">{{ patient.first_name }} {{ patient.surname }}</a></li></td>
             <td> {{ patient.email}} </td>
         {% endfor %}
     </tbody>
