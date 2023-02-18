@@ -107,10 +107,6 @@ def registerPatient():
             db.session.add(new_association)
             db.session.commit()
 
-            print(new_association.id)
-            print(new_association.patient_id)
-            print(new_association.therapist_id)
-
             login_user(new_patient, remember=True)
             flash('Account Created!', category='success')
             return redirect(url_for('main.index'))
