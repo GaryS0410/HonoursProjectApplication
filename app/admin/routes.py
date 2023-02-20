@@ -9,13 +9,13 @@ from app.admin import bp
 @login_required
 def adminDash():
     if(current_user.is_therapist):
-        therapist = current_user.id
-        associations = Association.query.filter_by(therapist_id=therapist).all()
+        therapist = current_user
+        associations = Association.query.filter_by(therapist_id=therapist.id).all()
         patients = []
         for association in associations:
             patient = User.query.filter_by(id=association.patient_id).first()
             patients.append(patient)
-        return render_template('admin/adminDashboard.html', patients=patients)
+        return render_template('admin/adminDashboard.html', patients=patients, therapist = therapist.first_name)
     else:
         return "<h4> Not authorised </h4>"
 

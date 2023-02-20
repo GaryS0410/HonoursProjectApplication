@@ -15,7 +15,6 @@ image_list = np.zeros((1, 48, 48, 1))
 model = load_model('app\ml_models\initalModel.h5')
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
 
-
 # HELPER FUNCTIONS
 def preprocessImage(webcamImage):
     webcamImage = Image.open(BytesIO(webcamImage))

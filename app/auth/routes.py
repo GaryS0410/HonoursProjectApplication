@@ -5,6 +5,7 @@ from app import db
 from flask_login import login_user, login_required, logout_user, current_user
 
 from app.auth import bp
+from .forms import RegisterPatientForm
 
 # Auth.py blueprint declaration
 auth = Blueprint('auth', __name__)
@@ -70,44 +71,75 @@ def registerTherapist():
             return redirect(url_for('admin.adminDash'))
     return render_template('auth/registerTherapist.html')
 
+# @bp.route('/registerPatient', methods=['GET', 'POST'])
+# def registerPatient():
+#     therapist_list = User.query.filter_by(is_therapist=True).all()
+
+#     if request.method == 'POST':
+#         first_name = request.form.get('firstname')
+#         surname = request.form.get('surname')
+#         email = request.form.get('email')Here
+#         password1 = request.form.get('password1')
+#         password2 = request.form.get('password2')
+
+#         user = User.query.filter_by(email=email).first()
+
+#         if user:
+#             flash('Email already exists.', category='error')
+#         elif len(email) < 4:
+#             flash('Email must be greater than 3 characters.', category='error')
+#         elif len(first_name) < 2:
+#             flash('First name must be greater than 1 chartacter.', category='error')
+#         elif len(surname) < 2:
+#             flash('Surname must be greater than 2 characters.', category='error')
+#         elif password1 != password2:
+#             flash('Passwords don\'t match.', category='error')
+#         elif len(password1) < 7:
+#             flash('Password must be at least 7 characters.', category='error')
+#         else:
+#             therapist_choice = request.form.get('therapistList')
+#             print(therapist_choice)
+#             new_patient = User(first_name = first_name, surname = surname, email=email, password=generate_password_hash(password1, method='sha256'), is_therapist = False)
+#             db.session.add(new_patient)
+#             db.session.commit()
+            
+#             # Association
+#             new_association = Association(patient_id = new_patient.id, therapist_id = therapist_choice)
+#             db.session.add(new_association)
+#             db.session.commit()
+
+#             login_user(new_patient, remember=True)
+#             flash('Account Created!', category='success')
+#             return redirect(url_for('main.index'))
+#     return render_template('auth/register.html', therapist_list = therapist_list)
+
 @bp.route('/registerPatient', methods=['GET', 'POST'])
 def registerPatient():
     therapist_list = User.query.filter_by(is_therapist=True).all()
+    form = RegisterPatientForm()
 
-    if request.method == 'POST':
-        first_name = request.form.get('firstname')
-        surname = request.form.get('surname')
-        email = request.form.get('email')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-
-        user = User.query.filter_by(email=email).first()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
 
         if user:
-            flash('Email already exists.', category='error')
-        elif len(email) < 4:
-            flash('Email must be greater than 3 characters.', category='error')
-        elif len(first_name) < 2:
-            flash('First name must be greater than 1 chartacter.', category='error')
-        elif len(surname) < 2:
-            flash('Surname must be greater than 2 characters.', category='error')
-        elif password1 != password2:
-            flash('Passwords don\'t match.', category='error')
-        elif len(password1) < 7:
-            flash('Password must be at least 7 characters.', category='error')
+            flash('Email already exists', category='error')
         else:
-            therapist_choice = request.form.get('therapistList')
+            therapist_choice = form.therapist_choice.data
+            therapist_choice = User.query.get(therapist_choice)
             print(therapist_choice)
-            new_patient = User(first_name = first_name, surname = surname, email=email, password=generate_password_hash(password1, method='sha256'), is_therapist = False)
+            new_patient = User(first_name=form.first_name.data, surname=form.surname.data, email=form.email.data, 
+            password=generate_password_hash(form.password.data, method="sha256"), is_therapist=False)
             db.session.add(new_patient)
             db.session.commit()
-            
-            # Association
-            new_association = Association(patient_id = new_patient.id, therapist_id = therapist_choice)
-            db.session.add(new_association)
+
+            # Create association between patient and therapist
+            new_assocation = Association(patient_id = new_patient.id, therapist_id = therapist_choice.id)
+            print(new_assocation)
+            db.session.add(new_assocation)
             db.session.commit()
 
             login_user(new_patient, remember=True)
-            flash('Account Created!', category='success')
+            flash('Account created!', category='success')
             return redirect(url_for('main.index'))
-    return render_template('auth/register.html', therapist_list = therapist_list)
+    
+    return render_template('auth/registerPatient.html', form=form)

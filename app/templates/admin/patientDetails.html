@@ -16,13 +16,12 @@
                 {% for emotion in session.emotion_data%}
                 <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
                 {% endfor %}
-                <a href="#" class="btn btn-primary">Review Session Details</a>
+                <button id="deleteSession" type="button" class="btn btn-primary">Delete Session Data</button>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
-
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
 
