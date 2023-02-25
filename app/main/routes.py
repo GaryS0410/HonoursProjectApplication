@@ -1,18 +1,20 @@
-from flask import Blueprint, render_template, request, jsonify, flash
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
 import cv2
 from io import BytesIO
 from flask_login import login_required, current_user
+import speech_recognition as sr
 
 from app import db
 from app.models import SessionData, EmotionData
 from app.main import bp
+from ..models import User
 
 # GLOBAL VARIABLES
 image_list = np.zeros((1, 48, 48, 1))
-model = load_model('app\ml_models\initalModel.h5')
+model = load_model('app\ml_models\initalModel.h5')  
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
 
 # HELPER FUNCTIONS
@@ -50,6 +52,8 @@ def preprocessImage(webcamImage):
 @bp.route('/')
 @login_required
 def index():
+    if current_user.is_therapist:
+        return redirect(url_for('admin.adminDash'))
     return render_template('index.html', user=current_user)
 
 @bp.route('/startSession', methods = ['GET', 'POST'])
@@ -60,7 +64,7 @@ def startSession():
         if fs:
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
-            return 'got photo'       
+            return 'got photo'      
         else:
             return 'no photo'
 
@@ -94,8 +98,6 @@ def predict_emotion():
             db.session.add(emotion_db)
         db.session.commit()
 
-        print(emotions_count)
-
         flash('Session data has been saved', category='success')
 
         image_list = np.zeros((1, 48, 48, 1))
@@ -112,3 +114,49 @@ def displayPreviousData():
             emotions_count[emotion.emotion_type] = emotion.emotion_instances
         session_data.append({"session_id": session.id, "emotions_count": emotions_count}) 
     return render_template('previousSessions.html', sessions = sessions , session_data=session_data)
+
+@bp.route('/profile')
+@login_required
+def profile():
+    patient = User.query.filter_by(id = current_user.id).first()
+
+    mostRecentSession = SessionData.query.filter_by(user_id = patient.id).order_by(SessionData.time_of_session.desc()).first()
+    emotions_count = {}
+    for emotion in mostRecentSession.emotion_data:
+        emotions_count[emotion.emotion_type] = emotion.emotion_instances
+
+    return render_template("patientProfile.html", user = patient, recentSession = emotions_count)
+
+@bp.route('/transcribe', methods=['GET', 'POST'])
+def transcribe():
+    # if request.method == 'POST':
+    #     r = sr.Recognizer()
+    #     with sr.Microphone() as source:
+    #         audio = r.listen(source)
+    #     try:
+    #         text = r.recognize_google(audio)
+    #         return jsonify({'transcription': text})
+    #     except sr.UnknownValueError:
+    #         return jsonify({'error': 'Could not understand audio'})
+    #     except sr.RequestError as e:
+    #         return jsonify({'error': 'Could not request results from Google Speech Recognition service; {0}'.format(e)})
+    # else:
+    #     return jsonify({'error': 'Invalid request method'})
+    if request.method == 'POST':
+        audio_data = request.files.get('audio_data')
+        r = sr.Recognizer()
+        with sr.AudioFile(audio_data) as source:
+            audio_text = r.record(source)
+        try:
+            text = r.recognize_google(audio_text)
+            return jsonify({'transcription': text})
+        except sr.UnknownValueError:
+            return jsonify({'error': 'Could not understand audio'})
+        except sr.RequestError as e:
+            return jsonify({'error': 'Could not request results from Google Speech Recognition service; {0}'.format(e)})
+    else: 
+        return render_template('transcript.html')
+    
+@bp.route('/testPage')
+def testPage():
+    return render_template('testPage.html')

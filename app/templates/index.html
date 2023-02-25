@@ -1,4 +1,4 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 {% block title %} FER Model {% endblock %}
 
 {% block content %}
@@ -11,11 +11,11 @@
                 <video id="video" width="640" height="480" autoplay></video>
                 <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
             </div>
-            <button id="snap" type="button" class="btn btn-primary">Start Session</button>
-            <button id="stop" type="button" class="btn btn-primary">Stop Session</button>
+            <button id="snap" type="button" class="btn btn-dark">Start Session</button>
+            <button id="stop" type="button" class="btn btn-dark">Stop Session</button>
         </div>
         <div class="col-md-6">
-            <h2> Emotions Chart </h2>
+            <h2> Emotional Analysis </h2>
             <h4 id="mostCommon">Your Most Common Emotion: </h4>
             <div class="results" id="results"></div>
             <canvas id="pieChartCanvas" width="640" height="480"></canvas>

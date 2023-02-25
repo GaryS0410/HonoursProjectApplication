@@ -35,5 +35,38 @@ function takePhoto() {
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 2000); 
+    intervalId = setInterval(takePhoto, 1000); 
 })
+
+function disableStartButton() {
+    document.getElementById('snap').disabled = true;
+}
+
+function enableStartButton() {
+    document.getElementById('snap').disabled = false;
+}
+
+function disableStopButton() {
+    document.getElementById('stop').disabled = true;
+}
+
+function enableStopButton() {
+    document.getElementById('stop').disabled = false;
+}
+
+document.getElementById('snap').addEventListener('click', () => {
+    intervalId = setInterval(takePhoto, 1000);
+    disableStartButton();
+    enableStopButton();
+})
+
+document.getElementById('stop').addEventListener('click', () => {
+    clearInterval(intervalId);
+    enableStartButton();
+    disableStopButton();
+    alert('Session Stopped');
+    getPrediction();
+})
+
+disableStopButton();
+enableStartButton();

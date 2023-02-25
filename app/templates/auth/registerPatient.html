@@ -1,59 +1,57 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 {% block title %} Register Account {% endblock %}
 
 {% block content %}
 
-<div class="container">
-    <form method="POST" action="{{ url_for('auth.registerPatient')}}">
-        <h3> Register Patient Account </h3>
-        {{ form.csrf_token }}
-        <div class="form-group">
-            {{ form.first_name.label }}
-            {{ form.first_name(class="form-control") }}
-            {% for error in form.first_name.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.surname.label }}
-            {{ form.surname(class="form-control") }}
-            {% for error in form.surname.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.email.label }}
-            {{ form.email(class="form-control") }}
-            {% for error in form.email.errors %}
-            <div class="invalid-feedback"> {{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.password.label }}
-            {{ form.password(class="form-control") }}
-            {% for error in form.password.errors %}
-            <div class="invalid-feedback"> {{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.confirm_password.label }}
-            {{ form.confirm_password(class="form-control") }}
-            {% for error in form.confirm_password.errors %}
-            <div class="invalid-feedback"> {{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.therapist_choice.label(class="form-label") }}
-            {{ form.therapist_choice(class="form-control") }}
-            {% for error in form.therapist_choice.errors %}
-                <span class="text-danger"> {{error}} </span>
-            {% endfor %}
-        </div>
-        <br />
-        <div class="form-group">
-            {{ form.submit(class="btn btn-primary") }}
-        </div>
-    </form>
-</div>
+<form method="POST" action="{{ url_for('auth.registerPatient')}}">
+    <h3> Register Patient Account </h3>
+    {{ form.csrf_token }}
+    <div class="form-group">
+        {{ form.first_name.label }}
+        {{ form.first_name(class="form-control") }}
+        {% for error in form.first_name.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.surname.label }}
+        {{ form.surname(class="form-control") }}
+        {% for error in form.surname.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email(class="form-control") }}
+        {% for error in form.email.errors %}
+        <div class="invalid-feedback"> {{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class="form-control") }}
+        {% for error in form.password.errors %}
+        <div class="invalid-feedback"> {{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password(class="form-control") }}
+        {% for error in form.confirm_password.errors %}
+        <div class="invalid-feedback"> {{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.therapist_choice.label(class="form-label") }}
+        {{ form.therapist_choice(class="form-control") }}
+        {% for error in form.therapist_choice.errors %}
+        <span class="text-danger"> {{error}} </span>
+        {% endfor %}
+    </div>
+    <br />
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
 
 {% endblock %}

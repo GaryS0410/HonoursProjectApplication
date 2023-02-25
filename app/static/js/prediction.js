@@ -1,4 +1,5 @@
 var intervalId;
+var sessionStarted = false;
 
 function fetchData(){
     return fetch('/predict')

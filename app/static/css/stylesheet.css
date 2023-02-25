@@ -1,8 +1,20 @@
 canvas {
-    width:100%;
+    width: 100%;
     max-width: 600px;
 }
 
 .container {
     text-align: center;
+}
+
+body {
+    background-color: #444653;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #c7c6cd;
+}
+
+p {
+    color: #c7c6cd;
 }

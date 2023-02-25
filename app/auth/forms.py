@@ -21,3 +21,11 @@ class RegisterPatientForm(FlaskForm):
                                          for therapist in User.query.filter_by(is_therapist=True).all()]
         else: 
             self.therapist_choice.choices = [(0, "No Therapists Currently Available.")]
+
+class RegisterTherapist(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(min=2)])
+    surname = StringField('Surname', validators=[DataRequired(), Length(min=2)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=7)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Sign Up')

@@ -1,4 +1,4 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 
 {% block title %} Patient Details {% endblock %}
 
@@ -16,7 +16,9 @@
                 {% for emotion in session.emotion_data%}
                 <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
                 {% endfor %}
-                <button id="deleteSession" type="button" class="btn btn-primary">Delete Session Data</button>
+                <button id="reviewSession" type="button" class="btn btn-primary">Review Session Further</button>
+                <br />
+                <button id ="deleteSession" type="button" class="btn btn-secondary mb-3">Delete Session Data</button>
             </div>
         </div>
         {% endfor %}

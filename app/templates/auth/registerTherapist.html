@@ -1,35 +1,50 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 {% block title %} Register Account {% endblock %}
 
 {% block content %}
 
-<div class="container">
-    <form method="POST">
-        <h3>Register Account</h3>
-        <div class="form-group">
-            <label for="firstname">First Name</label>
-            <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name..." />
-        </div>
-        <div class="form-group">
-            <label for="surname">Surname</label>
-            <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname...">
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" class="form-control" id="email" name="email" placeholder="Email...">
-        </div>
-        <div class="form-group">
-            <label for="password1">Password</label>
-            <input type="password" class="form-control" id="password1" name="password1" placeholder="Password..." />
-        </div>
-        <div class="form-group">
-            <label for="password2">Confirm Password</label>
-            <input type="password" class="form-control" id="password2" name="password2"
-                placeholder="Confirm Password..." />
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary" name="submitRegister" value="SubmitRegister">Submit</button>
-    </form>
-</div>
+<form method="POST" action="{{ url_for('auth.registerTherapist') }}">
+    <h3> Register Therapist Account </h3>
+    {{ form.csrf_token }}
+    <div class="form-group">
+        {{ form.first_name.label }}
+        {{ form.first_name(class="form-control") }}
+        {% for error in form.first_name.errors %}
+        <div class ="invalid-feedback"> {{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.surname.label }}
+        {{ form.surname(class="form-control") }}
+        {% for error in form.surname.errors %}
+        <div class="invalid-feedback"> {{ error }} </div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email(class="form-control" ) }}
+        {% for error in form.email.errors %}
+        <div class="invalid-feedback"> {{ error }} </div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class = "form-control") }}
+        {% for error in form.password.errors %}
+        <div class="invalid-feedback"> {{error}} </div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password(class="form-control") }}
+        {% for error in form.confirm_password.errors %}
+        <div class="invalid-feedback"> {{ error }} </div>
+        {% endfor %}
+    </div>
+    <br />
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
 
 {% endblock %}
