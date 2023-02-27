@@ -26,7 +26,7 @@
 
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesheet.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <title>{% block title %} Honours Project Application {% endblock %}</title>
 
@@ -48,6 +48,7 @@
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                 {% elif current_user.is_authenticated and not current_user.is_therapist %}
                 <a class="nav-item nav-link" id="model" href="/">FER Model</a>
+                <a class="nav-item nav-link" id="questionnaire" href="/questionnaire">PHQ-9 Question Questionnaire</a>
                 <a class="nav-item nav-link" id="previousSession" href="/previous">Previous Sesssions</a>
                 <a class="nav-item nav-link" id="userprofile" href="/profile">User Profile</a>
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>

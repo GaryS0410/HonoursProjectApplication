@@ -1,5 +1,4 @@
 var intervalId;
-var sessionStarted = false;
 
 function fetchData(){
     return fetch('/predict')
@@ -12,7 +11,7 @@ function fetchData(){
 }
 
 function displayMostCommonEmotion(data) {
-    const entries = Object.entries(data);
+    const entries = Object.entries(data.emotions_count);
     entries.sort((a, b) => b[1] - a[1]);
     console.log(entries[0][0]);
 
@@ -24,17 +23,14 @@ function displayMostCommonEmotion(data) {
 }
 
 function createPieChart(data) {
-    const labels = Object.keys(data);
-    const values = Object.values(data);
+    const emotionsCount = data.emotions_count;
+    const labels = Object.keys(emotionsCount);
+    const values = Object.values(emotionsCount);
 
     var display = document.getElementById('pieChartCanvas');
     var context = display.getContext("2d");
     context.clearRect(0, 0, display.width, display.height);
 
-    if(emotionsChart) {
-        emotionsChart.destory();
-    }
-    
     var emotionsChart = new Chart(display, {
         type: 'pie', 
         data: {
@@ -50,9 +46,17 @@ function createPieChart(data) {
     });
 }
 
+function displayEmotionScore(score) {
+    var heading = document.getElementById("emotionScore");
+    heading.innerHTML = "";
+    var currentText = "Your Emotion Score is: "
+    heading.textContent = currentText + score;
+}
+
 function getPrediction() {
     fetchData()
         .then(data => {
+            displayEmotionScore(data.emotional_score);
             displayMostCommonEmotion(data);
             createPieChart(data);
         });
@@ -60,6 +64,5 @@ function getPrediction() {
 
 document.getElementById('stop').addEventListener('click', () => {
     clearInterval(intervalId);
-    alert('Session Stopped');
     getPrediction();
 })

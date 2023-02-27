@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+{% block head %}
+
+<style>
+    form {
+        color: #c7c6cd;
+    }
+</style>
+
+{% endblock %}
+
+<h1>PHQ-9 Questionnaire</h1>
+<form method="POST">
+    {% for question in questions %}
+    <p>{{ question }}</p>
+    <label><input type="radio" name="q{{ loop.index }}" value="0"> Not at all</label>
+    <label><input type="radio" name="q{{ loop.index }}" value="1"> Several days</label>
+    <label><input type="radio" name="q{{ loop.index }}" value="2"> More than half the days</label>
+    <label><input type="radio" name="q{{ loop.index }}" value="3"> Nearly every day</label>
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

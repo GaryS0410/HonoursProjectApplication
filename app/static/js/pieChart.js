@@ -17,7 +17,12 @@ function createPieChart(canvasId, data){
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            legend: {
+                labels: {
+                    fontColor: '#c7c6cd'
+                }
+            }
         },
     });
 }

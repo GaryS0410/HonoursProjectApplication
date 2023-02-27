@@ -4,10 +4,12 @@ let video = document.querySelector('#video');
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        enableButtons()
         video.srcObject = stream;
         video.play();
     }).catch((err) => {
         console.log('Could not access webcam', err);
+        disableButtons()
         alert("No webcam detected. Please try again with a functioning camera.");
     });
 }
@@ -38,35 +40,12 @@ document.getElementById('snap').addEventListener('click', () => {
     intervalId = setInterval(takePhoto, 1000); 
 })
 
-function disableStartButton() {
+function disableButtons() {
     document.getElementById('snap').disabled = true;
-}
-
-function enableStartButton() {
-    document.getElementById('snap').disabled = false;
-}
-
-function disableStopButton() {
     document.getElementById('stop').disabled = true;
 }
 
-function enableStopButton() {
+function enableButtons() {
+    document.getElementById('snap').disabled = false;
     document.getElementById('stop').disabled = false;
 }
-
-document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 1000);
-    disableStartButton();
-    enableStopButton();
-})
-
-document.getElementById('stop').addEventListener('click', () => {
-    clearInterval(intervalId);
-    enableStartButton();
-    disableStopButton();
-    alert('Session Stopped');
-    getPrediction();
-})
-
-disableStopButton();
-enableStartButton();

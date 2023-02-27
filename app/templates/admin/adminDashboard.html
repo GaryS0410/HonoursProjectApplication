@@ -21,19 +21,10 @@
                         patient.surname }}</a>
                 </td>
                 <td> {{ patient.email}} </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $('#patientsTable').DataTable({
-            "columns": [
-                { "data": "Patient Name" },
-                { "data": "Patients Email" },
-            ]
-        });
-    });
-</script>
 {% endblock %}

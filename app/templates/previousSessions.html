@@ -3,21 +3,21 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="card-group d-flex flex-wrap">
-        {% for session in sessions %}
-        <div class="card mb-3 d-inline-block" style="width: 18rem;">
-            <canvas id="pieChartCanvas{{ loop.index }}" width="340" height="200"></canvas>
-            <div class="card-body">
-                <h5 class="card-title">Data and Time of Session: {{session.time_of_session}}</h5>
-                {% for emotion in session.emotion_data%}
-                <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
-                {% endfor %}
-                <a href="#" class="btn btn-primary">Review Session Details</a>
-            </div>
+<h3> Previous Sessions </h3>
+
+<div class="card-group d-flex flex-wrap">
+    {% for session in sessions %}
+    <div class="card mb-3 d-inline-block" style="width: 18rem;">
+        <canvas id="pieChartCanvas{{ loop.index }}" width="340" height="200"></canvas>
+        <div class="card-body">
+            <h5 class="card-title">Data and Time of Session: {{session.time_of_session}}</h5>
+            {% for emotion in session.emotion_data%}
+            <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
+            {% endfor %}
+            <a href="#" class="btn btn-primary">Review Session Details</a>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>

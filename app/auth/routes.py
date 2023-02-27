@@ -7,9 +7,6 @@ from flask_login import login_user, login_required, logout_user, current_user
 from app.auth import bp
 from .forms import RegisterPatientForm, RegisterTherapist
 
-# Auth.py blueprint declaration
-auth = Blueprint('auth', __name__)
-
 ###########################
 # REGISTERING FUNCTIONALITY 
 ###########################
@@ -68,9 +65,9 @@ def registerPatient():
     
     return render_template('auth/registerPatient.html', form=form)
 
-#################################
-# LOGGING IN/LOGOUT FUNCTIONALITY
-#################################
+###################################
+# LOGGING IN/LOGOUT FUNCTIONALITY #
+###################################
 
 @bp.route('/login', methods = ['GET', 'POST'])
 def login():

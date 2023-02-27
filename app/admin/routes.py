@@ -7,6 +7,10 @@ from app import db
 from app.models import *
 from app.admin import bp
 
+############################
+# ADMIN ENDPOINT FUNCTIONS #
+############################
+
 @bp.route('adminDashboard')
 @login_required
 def adminDash():

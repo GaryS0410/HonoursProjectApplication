@@ -5,19 +5,28 @@ from tensorflow.keras.models import load_model
 import cv2
 from io import BytesIO
 from flask_login import login_required, current_user
-import speech_recognition as sr
 
 from app import db
 from app.models import SessionData, EmotionData
 from app.main import bp
 from ..models import User
 
-# GLOBAL VARIABLES
+####################
+# GLOBAL VARIABLES #
+####################
 image_list = np.zeros((1, 48, 48, 1))
 model = load_model('app\ml_models\initalModel.h5')  
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
 
-# HELPER FUNCTIONS
+####################
+# HELPER FUNCTIONS #
+####################
+
+# Function to pre-process a captured webcam image. Applies everything to it the model requires
+# for it to predict on, such as turn to greyscale and resize to 48*48. The function also attempts
+# to use OpenCV's frontal facing cascade in order to crop a face. If it fails then it will just
+# use the whole image instead (may need to be rethought) 
+
 def preprocessImage(webcamImage):
     webcamImage = Image.open(BytesIO(webcamImage))
     grey_image = cv2.cvtColor(np.array(webcamImage), cv2.COLOR_BGR2GRAY)
@@ -48,7 +57,43 @@ def preprocessImage(webcamImage):
             
         return grey_image
 
-# ENDPOINT FUNCTIONS
+def calculateEmotionScore(emotions_count):
+    postive_emotions = ['happy']
+    neutral_emotions = ['surprise', 'disgust', 'neutral']
+    negative_emotions = ['fear', 'angry', 'sad']
+
+    postive_count = 0
+    neutral_count = 0
+    negative_count = 0
+
+    for emotion, count in emotions_count.items():
+        if emotion in postive_emotions:
+            postive_count += count
+        elif emotion in neutral_emotions:
+            neutral_count += count
+        elif emotion in negative_emotions:
+            negative_count += count
+    
+    total_count = postive_count + neutral_count + negative_count
+
+    if total_count == 0:
+        return None
+    
+    postive_percentage = postive_count / total_count
+    neutral_percentage = neutral_count / total_count
+    negative_percentage = negative_count / total_count
+
+    if postive_percentage > neutral_percentage and postive_percentage > negative_percentage:
+        return 'Postive'
+    elif neutral_percentage > postive_percentage and neutral_percentage > negative_percentage:
+        return 'Neutral'
+    else:
+        return 'Negative'
+
+######################
+# ENDPOINT FUNCTIONS #
+######################
+
 @bp.route('/')
 @login_required
 def index():
@@ -64,7 +109,7 @@ def startSession():
         if fs:
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
-            return 'got photo'      
+            return 'got photo'   
         else:
             return 'no photo'
 
@@ -87,7 +132,9 @@ def predict_emotion():
             if i in emotions_count:
                 emotions_count[i] += 1
             else: 
-                emotions_count[i] = 1 
+                emotions_count[i] = 1
+    
+        emotional_score = calculateEmotionScore(emotions_count)
 
         session_db = SessionData(user_id = current_user.id)
         db.session.add(session_db)
@@ -101,7 +148,8 @@ def predict_emotion():
         flash('Session data has been saved', category='success')
 
         image_list = np.zeros((1, 48, 48, 1))
-        return jsonify(emotions_count)
+
+        return jsonify({'emotions_count': emotions_count, 'emotional_score': emotional_score})
 
 @bp.route('/previous')
 @login_required
@@ -119,44 +167,14 @@ def displayPreviousData():
 @login_required
 def profile():
     patient = User.query.filter_by(id = current_user.id).first()
-
+    allSessions = SessionData.query.filter_by(user_id = patient.id).all()
     mostRecentSession = SessionData.query.filter_by(user_id = patient.id).order_by(SessionData.time_of_session.desc()).first()
     emotions_count = {}
     for emotion in mostRecentSession.emotion_data:
         emotions_count[emotion.emotion_type] = emotion.emotion_instances
 
-    return render_template("patientProfile.html", user = patient, recentSession = emotions_count)
+    return render_template("patientProfile.html", user = patient, recentSessionEmotions = emotions_count, latestSession = mostRecentSession, allSessions = allSessions)
 
-@bp.route('/transcribe', methods=['GET', 'POST'])
-def transcribe():
-    # if request.method == 'POST':
-    #     r = sr.Recognizer()
-    #     with sr.Microphone() as source:
-    #         audio = r.listen(source)
-    #     try:
-    #         text = r.recognize_google(audio)
-    #         return jsonify({'transcription': text})
-    #     except sr.UnknownValueError:
-    #         return jsonify({'error': 'Could not understand audio'})
-    #     except sr.RequestError as e:
-    #         return jsonify({'error': 'Could not request results from Google Speech Recognition service; {0}'.format(e)})
-    # else:
-    #     return jsonify({'error': 'Invalid request method'})
-    if request.method == 'POST':
-        audio_data = request.files.get('audio_data')
-        r = sr.Recognizer()
-        with sr.AudioFile(audio_data) as source:
-            audio_text = r.record(source)
-        try:
-            text = r.recognize_google(audio_text)
-            return jsonify({'transcription': text})
-        except sr.UnknownValueError:
-            return jsonify({'error': 'Could not understand audio'})
-        except sr.RequestError as e:
-            return jsonify({'error': 'Could not request results from Google Speech Recognition service; {0}'.format(e)})
-    else: 
-        return render_template('transcript.html')
-    
-@bp.route('/testPage')
-def testPage():
-    return render_template('testPage.html')
+@bp.route('/questionnaire', methods = ['GET', 'POST'])
+def PH9_Questionnaire():
+    return render_template('PHQ-9.html')
