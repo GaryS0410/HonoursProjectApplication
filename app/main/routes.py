@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import SessionData, EmotionData
 from app.main import bp
+from .forms import PHQ9Form
 from ..models import User
 
 ####################
@@ -177,4 +178,5 @@ def profile():
 
 @bp.route('/questionnaire', methods = ['GET', 'POST'])
 def PH9_Questionnaire():
-    return render_template('PHQ-9.html')
+    questionnaire = PHQ9Form()
+    return render_template('PHQ-9.html', form = questionnaire)

@@ -13,6 +13,7 @@
             <h5 class="card-title">Data and Time of Session: {{session.time_of_session}}</h5>
             {% for emotion in session.emotion_data%}
             <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
+            <p> {{emotion.timestamp}} </p>
             {% endfor %}
             <a href="#" class="btn btn-primary">Review Session Details</a>
         </div>

@@ -3,17 +3,17 @@
 
 {% block content %}
 
-<div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+<div class="d-flex align-items-center justify-content-center" style="height: 80vh;">
     <div class="card text-center">
         <div class="card-header">
             <h3 class="card-title">Register Account</h3>
         </div>
         <div class="card-body">
             <div class="mb-3">
-                <a href="{{ url_for('auth.registerPatient') }}" class="btn btn-primary btn-lg btn-block">Register Patient Account</a>
+                <a href="{{ url_for('auth.registerPatient') }}" class="btn btn-secondary btn-lg btn-block">Register Patient Account</a>
             </div>
             <div class="mb-3">
-                <a href="{{ url_for('auth.registerTherapist') }}" class="btn btn-primary btn-lg btn-block">Register Therapist Account</a>
+                <a href="{{ url_for('auth.registerTherapist') }}" class="btn btn-secondary btn-lg btn-block">Register Therapist Account</a>
             </div>
         </div>
     </div>
