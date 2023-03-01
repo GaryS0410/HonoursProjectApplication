@@ -5,6 +5,7 @@ from tensorflow.keras.models import load_model
 import cv2
 from io import BytesIO
 from flask_login import login_required, current_user
+from datetime import datetime
 
 from app import db
 from app.models import SessionData, EmotionData
@@ -18,16 +19,11 @@ from ..models import User
 image_list = np.zeros((1, 48, 48, 1))
 model = load_model('app\ml_models\initalModel.h5')  
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
+image_timestamps = []
 
 ####################
 # HELPER FUNCTIONS #
 ####################
-
-# Function to pre-process a captured webcam image. Applies everything to it the model requires
-# for it to predict on, such as turn to greyscale and resize to 48*48. The function also attempts
-# to use OpenCV's frontal facing cascade in order to crop a face. If it fails then it will just
-# use the whole image instead (may need to be rethought) 
-
 def preprocessImage(webcamImage):
     webcamImage = Image.open(BytesIO(webcamImage))
     grey_image = cv2.cvtColor(np.array(webcamImage), cv2.COLOR_BGR2GRAY)
@@ -105,11 +101,16 @@ def index():
 @bp.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
+    global image_timestamps
     if request.method == 'POST':
         fs = request.files.get('snap').read()
         if fs:
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
+            print(len(image_list))
+            current_time = datetime.now()
+            image_timestamps.append(current_time)
+            print(len(image_timestamps))
             return 'got photo'   
         else:
             return 'no photo'
@@ -118,6 +119,8 @@ def startSession():
 def predict_emotion():
     if request.method == 'GET':
         global image_list
+        global image_timestamps
+        image_list = image_list[1:]
 
         predictions = model.predict(image_list)
         classes_x = np.argmax(predictions, axis = 1)
@@ -137,12 +140,14 @@ def predict_emotion():
     
         emotional_score = calculateEmotionScore(emotions_count)
 
-        session_db = SessionData(user_id = current_user.id)
+        session_db = SessionData(user_id = current_user.id, emotional_score = emotional_score)
         db.session.add(session_db)
         db.session.commit()
 
-        for emotion_name, count in emotions_count.items():
-            emotion_db = EmotionData(emotion_type = emotion_name, emotion_instances=count, session_id = session_db.id)
+        timestamp = datetime.now()
+
+        for i, emotion in enumerate(emotion_list):
+            emotion_db = EmotionData(emotion_type = emotion, time_captured = image_timestamps[i], session_id = session_db.id)
             db.session.add(emotion_db)
         db.session.commit()
 
@@ -155,14 +160,17 @@ def predict_emotion():
 @bp.route('/previous')
 @login_required
 def displayPreviousData():
-    sessions = SessionData.query.filter_by(user_id = current_user.id).all()
+    sessions = SessionData.query.filter_by(user_id=current_user.id).all()
     session_data = []
     for session in sessions:
         emotions_count = {}
         for emotion in session.emotion_data:
-            emotions_count[emotion.emotion_type] = emotion.emotion_instances
-        session_data.append({"session_id": session.id, "emotions_count": emotions_count}) 
-    return render_template('previousSessions.html', sessions = sessions , session_data=session_data)
+            if emotion.emotion_type in emotions_count:
+                emotions_count[emotion.emotion_type] += 1
+            else:
+                emotions_count[emotion.emotion_type] = 1
+        session_data.append({"session_id": session.id, "emotions_count": emotions_count})
+    return render_template('previousSessions.html', sessions=sessions, emotion_data=session_data)
 
 @bp.route('/profile')
 @login_required
@@ -170,13 +178,33 @@ def profile():
     patient = User.query.filter_by(id = current_user.id).first()
     allSessions = SessionData.query.filter_by(user_id = patient.id).all()
     mostRecentSession = SessionData.query.filter_by(user_id = patient.id).order_by(SessionData.time_of_session.desc()).first()
+
     emotions_count = {}
     for emotion in mostRecentSession.emotion_data:
-        emotions_count[emotion.emotion_type] = emotion.emotion_instances
-
-    return render_template("patientProfile.html", user = patient, recentSessionEmotions = emotions_count, latestSession = mostRecentSession, allSessions = allSessions)
+        if emotion.emotion_type in emotions_count:
+            emotions_count[emotion.emotion_type] += 1
+        else:
+            emotions_count[emotion.emotion_type] = 1
+    return render_template('patientProfile.html', user = patient, allSessions = allSessions, latestSession = mostRecentSession, recentSessionEmotions = emotions_count)
 
 @bp.route('/questionnaire', methods = ['GET', 'POST'])
 def PH9_Questionnaire():
     questionnaire = PHQ9Form()
     return render_template('PHQ-9.html', form = questionnaire)
+
+@bp.route('/specific/<int:id>')
+def specific(id):
+    session = SessionData.query.get(id)
+
+    emotional_score = session.emotional_score
+    emotions_count = {}
+    
+    for emotion in session.emotion_data:
+        if emotion.emotion_type in emotions_count:
+            emotions_count[emotion.emotion_type] += 1
+        else:
+            emotions_count[emotion.emotion_type] = 1 
+
+    emotion_data = EmotionData.query.filter_by(session_id = session.id).all()
+
+    return render_template('sessionDetails.html', score = emotional_score, emotion_data = emotion_data, emotions_count = emotions_count)

@@ -6,36 +6,58 @@
 
 <h3> Patient: {{patient.first_name}} {{patient.surname}} </h3>
 
-<div class="container">
-    <div class="card-group d-flex flex-wrap">
-        {% for session in sessions %}
-        <div class="card mb-3 d-inline-block" style="width: 18rem;">
-            <canvas id="pieChartCanvas{{ loop.index }}" width="340" height="200"></canvas>
-            <div class="card-body">
-                <h5 class="card-title">Data and Time of Session: {{session.time_of_session}}</h5>
-                {% for emotion in session.emotion_data%}
-                <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
+<div class="row">
+    <!-- Table of users latest sessions -->
+    <div class="col-6">
+        <table id="sessionsTable">
+            <thead>
+                <tr>
+                    <th> Time and Date </th>
+                    <th> Overall Emotional Score </th>
+                    <th> Further Details </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in allSessions %}
+                <tr>
+                    <td> {{ session.time_of_session }} </td>
+                    <td> {{ session.emotional_score }} </td>
+                    <td>
+                        <a href="{{ url_for('admin.specificSession', id=session.id) }}">
+                            <button type="button" class="btn btn-dark">View Further Details</button>
+                        </a>
+                    </td>
+                </tr>
                 {% endfor %}
-                <button id="reviewSession" type="button" class="btn btn-primary">Review Session Further</button>
-                <br />
-                <button id ="deleteSession" type="button" class="btn btn-secondary mb-3">Delete Session Data</button>
+            </tbody>
+        </table>
+    </div>
+    <!-- Card displaying latest user session -->
+    <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block" style="width: 18rem;">
+                <h5 class="card-title"> {{patient.first_name}}'s Most Recent Session: </h5>
+                <canvas id="recentSessionEmotions" width="340" height="200"></canvas>
+                <div class="card-body">
+                    <h5 class="card-title">Date and Time of Session: </h5>
+                    <h5> {{ mostRecentSession.time_of_session }} </h5>
+                    {% for emotion, count in recentSessionEmotions.items() %}
+                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
 
-{% for session in session_data %}
-
 <script>
-    var ctx = document.getElementById("pieChartCanvas{{ loop.index }}").getContext('2d');
-    var sessionData = {{ session["emotions_count"] | tojson }};
+    var ctx = document.getElementById("recentSessionEmotions").getContext('2d');
+    var sessionData = {{ recentSessionEmotions | tojson }};
 
     createPieChart(ctx, sessionData);
 </script>
 
-{% endfor %}
 
 {% endblock %}

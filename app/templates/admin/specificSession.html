@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% block title %} Session Data {% endblock %}
 
 {% block content %}
 
@@ -47,10 +46,10 @@
 
 <script>
     var ctx = document.getElementById('mostRecentSession').getContext('2d');
+
     var sessionData = {{ emotions_count | tojson }};
 
     createPieChart(ctx, sessionData);
 </script>
-
 
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Session {{ session.id }}</h1>
+<p>Time of session: {{ session.time_of_session }}</p>
+
+<h2>Emotion data</h2>
+{% if emotions %}
+<ul>
+    {% for emotion in emotions %}
+    <li>{{ emotion.emotion_type }} {{ emotion.time_captured}}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No emotion data available.</p>
+{% endif %}
+
+{% endblock %}

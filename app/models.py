@@ -10,12 +10,13 @@ class Association(db.Model):
 class EmotionData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     emotion_type = db.Column(db.String(20), nullable=False)
-    emotion_instances = db.Column(db.Integer, nullable=False)
+    time_captured = db.Column(db.DateTime(timezone=True), default=func.now())
     session_id = db.Column(db.Integer, db.ForeignKey('session_data.id'))
 
 class SessionData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     time_of_session = db.Column(db.DateTime(timezone=True), default=func.now())
+    emotional_score = db.Column(db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     emotion_data = db.relationship('EmotionData')
 

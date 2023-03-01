@@ -11,9 +11,8 @@
         <canvas id="pieChartCanvas{{ loop.index }}" width="340" height="200"></canvas>
         <div class="card-body">
             <h5 class="card-title">Data and Time of Session: {{session.time_of_session}}</h5>
-            {% for emotion in session.emotion_data%}
-            <p class="card-text">{{emotion.emotion_type}} ({{emotion.emotion_instances}} instances)</p>
-            <p> {{emotion.timestamp}} </p>
+            {% for emotion, count in emotion_data[loop.index-1]["emotions_count"].items() %}
+            <p class="card-text">{{emotion}} ({{count}} instances)</p>
             {% endfor %}
             <a href="#" class="btn btn-primary">Review Session Details</a>
         </div>
@@ -23,11 +22,11 @@
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
 
-{% for session in session_data %}
+{% for data in emotion_data %}
 
 <script>
     var ctx = document.getElementById('pieChartCanvas{{ loop.index }}').getContext('2d');
-    var sessionData = {{ session["emotions_count"] | tojson }};
+    var sessionData = {{ data["emotions_count"] | tojson }};
 
     createPieChart(ctx, sessionData);
 </script>
