@@ -1,6 +1,35 @@
 {% extends "base.html" %}
 {% block title %} Profile Page {% endblock %}
 
+{% block head %}
+
+<style>
+    #sessionsTable {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    #sessionsTable th {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    #sessionsTable td {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        margin: 0 5px;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
 
 <h3>{{ user.first_name }}'s User Profile </h3> <br />
@@ -23,7 +52,7 @@
                     <td> {{ session.emotional_score }} </td>
                     <td>
                         <a href="{{ url_for('main.specific', id=session.id) }}">
-                            <button type="button" class="btn btn-dark">View Further Details</button>
+                            <button type="button" class="btn btn-secondary">View Further Details</button>
                         </a>
                     </td>
                 </tr>
@@ -57,6 +86,16 @@
     var sessionData = {{ recentSessionEmotions | tojson }};
 
     createPieChart(ctx, sessionData);
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#sessionsTable').DataTable({
+            searching: false,
+            info: false,
+            lengthChange: false
+        });
+    });           
 </script>
 
 {% endblock %}

@@ -111,7 +111,7 @@ def startSession():
             current_time = datetime.now()
             image_timestamps.append(current_time)
             print(len(image_timestamps))
-            return 'got photo'   
+            return 'got photo' 
         else:
             return 'no photo'
 
@@ -156,21 +156,6 @@ def predict_emotion():
         image_list = np.zeros((1, 48, 48, 1))
 
         return jsonify({'emotions_count': emotions_count, 'emotional_score': emotional_score})
-
-@bp.route('/previous')
-@login_required
-def displayPreviousData():
-    sessions = SessionData.query.filter_by(user_id=current_user.id).all()
-    session_data = []
-    for session in sessions:
-        emotions_count = {}
-        for emotion in session.emotion_data:
-            if emotion.emotion_type in emotions_count:
-                emotions_count[emotion.emotion_type] += 1
-            else:
-                emotions_count[emotion.emotion_type] = 1
-        session_data.append({"session_id": session.id, "emotions_count": emotions_count})
-    return render_template('previousSessions.html', sessions=sessions, emotion_data=session_data)
 
 @bp.route('/profile')
 @login_required

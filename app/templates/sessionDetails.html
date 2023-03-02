@@ -1,6 +1,35 @@
 {% extends "base.html" %}
 {% block title %} Session Data {% endblock %}
 
+{% block head %}
+
+<style>
+    #sessionDetails {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    #sessionDetails th {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    #sessionDetails td {
+        background-color: #212429;
+        color: #c7c6cd;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        margin: 0 5px;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
 
 <h3> Details of Specific Session </h3>
@@ -8,35 +37,39 @@
 <h3> Emotional Score for this Session: {{ score }} </h3>
 
 <div class="row">
-    <div class="col-6">
-        <table id="sessionDetails">
-            <thead>
-                <tr>
-                    <th> Emotion Captured </th>
-                    <th> Timestamp </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for emotion in emotion_data %}
-                <tr>
-                    <td> {{ emotion.emotion_type }} </td>
-                    <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="col-6">
-        <div class="card-group d-flex flex-wrap">
-            <div class="card mb-3 d-inline-block" style="width: 18rem;">
-                <h5 class="card-title"> Session Details: </h5>
-                <canvas id="mostRecentSession" width="340" height="200"></canvas>
-                <div class="card-body">
-                    <h5 class="card-title">Date and Time of Session: </h5>
-                    <h5> {{ session.time_of_session }} </h5>
-                    {% for emotion, count in emotions_count.items() %}
-                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.</p>
+    <div class="row">
+        <div class="col-6">
+            <table id="sessionDetails">
+                <thead>
+                    <tr>
+                        <th> Emotion Captured </th>
+                        <th> Timestamp </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emotion in emotion_data %}
+                    <tr>
+                        <td> {{ emotion.emotion_type }} </td>
+                        <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
+                    </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </row>
+        <div class="col-6">
+            <div class="card-group d-flex flex-wrap">
+                <div class="card mb-3 d-inline-block" style="width: 18rem;">
+                    <h5 class="card-title"> Session Details: </h5>
+                    <canvas id="mostRecentSession" width="340" height="200"></canvas>
+                    <div class="card-body">
+                        <h5 class="card-title">Date and Time of Session: </h5>
+                        <h5> {{ session.time_of_session }} </h5>
+                        {% for emotion, count in emotions_count.items() %}
+                        <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
+                        </p>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,5 +85,14 @@
     createPieChart(ctx, sessionData);
 </script>
 
+<script>
+    $(document).ready(function () {
+        $('#sessionDetails').DataTable({
+            searching: false,
+            info: false,
+            lengthChange: false
+        });
+    });           
+</script>
 
 {% endblock %}

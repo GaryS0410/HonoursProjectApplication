@@ -46,16 +46,19 @@ def patientData(user_id):
 @bp.route('/specificSession/<int:id>')
 @login_required
 def specificSession(id):
-    session = SessionData.query.get(id)
+    if(current_user.is_therapist):
+        session = SessionData.query.get(id)
 
-    emotional_score = session.emotional_score
-    emotion_data = EmotionData.query.filter_by(session_id = session.id).all()
-    emotions_count = {}
+        emotional_score = session.emotional_score
+        emotion_data = EmotionData.query.filter_by(session_id = session.id).all()
+        emotions_count = {}
 
-    for emotion in session.emotion_data:
-        if emotion.emotion_type in emotions_count:
-            emotions_count[emotion.emotion_type] += 1
-        else:
-            emotions_count[emotion.emotion_type] = 1
+        for emotion in session.emotion_data:
+            if emotion.emotion_type in emotions_count:
+                emotions_count[emotion.emotion_type] += 1
+            else:
+                emotions_count[emotion.emotion_type] = 1
 
-    return render_template('admin/specificSession.html', session = session, score=emotional_score, emotion_data = emotion_data, emotions_count = emotions_count)
+        return render_template('admin/specificSession.html', session = session, score=emotional_score, emotion_data = emotion_data, emotions_count = emotions_count)
+    else:
+        return "<h4> Not authorised </h4>"

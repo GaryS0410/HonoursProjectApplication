@@ -37,7 +37,7 @@ function takePhoto() {
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 2000); 
+    intervalId = setInterval(takePhoto, 1000); 
 })
 
 function disableButtons() {
