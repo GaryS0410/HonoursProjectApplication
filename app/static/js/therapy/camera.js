@@ -10,6 +10,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     }).catch((err) => {
         console.log('Could not access webcam', err);
         disableButtons()
+        video.textContent = "Please make sure your camera is functional and the browser has access to"
         alert("No webcam detected. Please try again with a functioning camera.");
     });
 }

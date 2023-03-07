@@ -93,7 +93,7 @@ def predict_emotion():
 # /quizPredict endpoint, virtually identical to the /predict endpoint except currently used
 # for the PHQ-9 quiz functionality. It would be good if these could instead be combined into 
 # one function
-@bp.route('/quizPredict', methods=['GET'])
+@bp.route('/quizPredict', methods=['GET', 'POST'])
 def predictQuiz():
     if request.method == 'GET':
         global image_list
@@ -117,7 +117,7 @@ def predictQuiz():
 
         print(emotions_count)
 
-        return jsonify(emotions=emotions_count)
+        return jsonify(emotions_count=emotions_count)
 
 # Endpoint for capturing images for the PHQ-9 quiz. Once again, very similiar to 
 # route for therapy session, would be beneficial if they could be combined into one
@@ -143,7 +143,7 @@ def PHQ9_Questionnaire():
         score = form.calculate_score()
         print(f"Your score is: {score}")
         flash(f"Your score is: {score}")
-        return render_template('PHQ-9.html', form = form, score = score)
+        # return render_template('PHQ-9.html', form = form, score = score)
     else:
         print(form.errors)
     return render_template('PHQ-9.html', form = form, score = None)
