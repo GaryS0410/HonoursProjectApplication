@@ -21,7 +21,6 @@ def registerTherapist():
 
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-
         if user:
             flash('Therapist account already exists. Please register with a different email address.')
         else:

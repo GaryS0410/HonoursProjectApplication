@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+# Necessary extension imports
+from flask import render_template, request, jsonify, flash, redirect, url_for
 import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
@@ -7,90 +8,28 @@ from io import BytesIO
 from flask_login import login_required, current_user
 from datetime import datetime
 
-from app import db
+# Necessary application imports
 from app.models import SessionData, EmotionData
 from app.main import bp
 from .forms import PHQ9Form
 from ..models import User
+from .helpers import *
 
-####################
-# GLOBAL VARIABLES #
-####################
+# Necessary global variable declartions
+# The image_list variable is used to intialise a empty 4D numpy array which will be used to store
+# the webcam images. Is necessary to be a global variable due to multiple endpoint functions
+# needing access to it.
+# The mode variable makes use of the load_model function in order to load in the created machine
+# learning model from the ml_models folder.
 image_list = np.zeros((1, 48, 48, 1))
-model = load_model('app\ml_models\initalModel.h5')  
-face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
-image_timestamps = []
+model = load_model('app\ml_models\initalModel.h5')
 
-####################
-# HELPER FUNCTIONS #
-####################
-def preprocessImage(webcamImage):
-    webcamImage = Image.open(BytesIO(webcamImage))
-    grey_image = cv2.cvtColor(np.array(webcamImage), cv2.COLOR_BGR2GRAY)
+# Endpoint Functions
 
-    try:
-        face = face_classifier.detectMultiScale(grey_image, scaleFactor=1.3, minNeighbors=5)
-
-        x, y, w, h = face[0]
-
-        face_image = grey_image[y:y+h, x:x+w]
-
-        face_image = cv2.resize(face_image, (48, 48))
-        face_image = face_image.astype('float32')
-        face_image /= 255.0
-
-        face_image = np.expand_dims(face_image, axis = 0)
-        face_image = np.expand_dims(face_image, axis = -1)
-        
-        return face_image
-
-    except:
-        grey_image = cv2.resize(grey_image, (48, 48))
-        grey_image = grey_image.astype('float32')
-        grey_image /= 255.0
-
-        grey_image = np.expand_dims(grey_image, axis = 0)
-        grey_image = np.expand_dims(grey_image, axis = -1)
-            
-        return grey_image
-
-def calculateEmotionScore(emotions_count):
-    postive_emotions = ['happy']
-    neutral_emotions = ['surprise', 'disgust', 'neutral']
-    negative_emotions = ['fear', 'angry', 'sad']
-
-    postive_count = 0
-    neutral_count = 0
-    negative_count = 0
-
-    for emotion, count in emotions_count.items():
-        if emotion in postive_emotions:
-            postive_count += count
-        elif emotion in neutral_emotions:
-            neutral_count += count
-        elif emotion in negative_emotions:
-            negative_count += count
-    
-    total_count = postive_count + neutral_count + negative_count
-
-    if total_count == 0:
-        return None
-    
-    postive_percentage = postive_count / total_count
-    neutral_percentage = neutral_count / total_count
-    negative_percentage = negative_count / total_count
-
-    if postive_percentage > neutral_percentage and postive_percentage > negative_percentage:
-        return 'Postive'
-    elif neutral_percentage > postive_percentage and neutral_percentage > negative_percentage:
-        return 'Neutral'
-    else:
-        return 'Negative'
-
-######################
-# ENDPOINT FUNCTIONS #
-######################
-
+# Route for the root of the application and the first page the user sees. If the user is a patient
+# they will be directer to the webcam with the ability to start and stop a session, whereas a
+# therapist user be be directed to the admin dashboard, wherein they will be able to see a list 
+# of their associated patients 
 @bp.route('/')
 @login_required
 def index():
@@ -98,28 +37,31 @@ def index():
         return redirect(url_for('admin.adminDash'))
     return render_template('index.html', user=current_user)
 
+# The /startSession endpoint, which is used to capture an image from the front-end and append it
+# to the global image_list variable. This variable is used by another function to make predictions
+# on the images captured.
 @bp.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
-    global image_timestamps
     if request.method == 'POST':
         fs = request.files.get('snap').read()
         if fs:
             fs = preprocessImage(fs)
             image_list = np.concatenate((image_list, fs), axis = 0)
-            print(len(image_list))
             current_time = datetime.now()
             image_timestamps.append(current_time)
-            print(len(image_timestamps))
-            return 'got photo' 
+            return 'Photo captured.' 
         else:
-            return 'no photo'
+            return 'Could not capture photo.'
 
+# The /predict endpoint. The predict_emotion function is used to make predictions on all images
+# contained within the image_list variable. Note: currently the first image is being removed due to 
+# the fact that the front-end function takes a picture when the button is pressed originally,
+# which we do not want.
 @bp.route('/predict', methods = ['GET'])
 def predict_emotion():
     if request.method == 'GET':
         global image_list
-        global image_timestamps
         image_list = image_list[1:]
 
         predictions = model.predict(image_list)
@@ -139,57 +81,69 @@ def predict_emotion():
                 emotions_count[i] = 1
     
         emotional_score = calculateEmotionScore(emotions_count)
-
-        session_db = SessionData(user_id = current_user.id, emotional_score = emotional_score)
-        db.session.add(session_db)
-        db.session.commit()
-
-        timestamp = datetime.now()
-
-        for i, emotion in enumerate(emotion_list):
-            emotion_db = EmotionData(emotion_type = emotion, time_captured = image_timestamps[i], session_id = session_db.id)
-            db.session.add(emotion_db)
-        db.session.commit()
+        saveSessionData(emotional_score, emotion_list)
 
         flash('Session data has been saved', category='success')
 
         image_list = np.zeros((1, 48, 48, 1))
+        image_timestamps = []
 
         return jsonify({'emotions_count': emotions_count, 'emotional_score': emotional_score})
 
-@bp.route('/profile')
-@login_required
-def profile():
-    patient = User.query.filter_by(id = current_user.id).first()
-    allSessions = SessionData.query.filter_by(user_id = patient.id).all()
-    mostRecentSession = SessionData.query.filter_by(user_id = patient.id).order_by(SessionData.time_of_session.desc()).first()
+# /quizPredict endpoint, virtually identical to the /predict endpoint except currently used
+# for the PHQ-9 quiz functionality. It would be good if these could instead be combined into 
+# one function
+@bp.route('/quizPredict', methods=['GET'])
+def predictQuiz():
+    if request.method == 'GET':
+        global image_list
+        predictions = model.predict(image_list)
+        classes_x = np.argmax(predictions, axis = 1)
 
-    emotions_count = {}
-    for emotion in mostRecentSession.emotion_data:
-        if emotion.emotion_type in emotions_count:
-            emotions_count[emotion.emotion_type] += 1
+        emotionNames = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
+        emotionLabels = emotionNames[classes_x]
+
+        emotion_list = emotionLabels.tolist()
+        emotionNames = emotionNames.tolist()
+        emotions_count = {}
+
+        for i in emotion_list:
+            if i in emotions_count:
+                emotions_count[i] += 1
+            else: 
+                emotions_count[i] = 1
+        
+        image_list = np.zeros((1, 48, 48, 1))
+
+        print(emotions_count)
+
+        return jsonify(emotions=emotions_count)
+
+# Endpoint for capturing images for the PHQ-9 quiz. Once again, very similiar to 
+# route for therapy session, would be beneficial if they could be combined into one
+# thing.
+@bp.route('/quizGet', methods=['POST'])
+def getQuiz():
+    if request.method == 'POST':
+        global image_list
+        fs = request.files.get('snap').read()
+        if fs: 
+            fs = preprocessImage(fs)
+            image_list = np.concatenate((image_list, fs), axis = 0)
+            return "Photo capturing"
         else:
-            emotions_count[emotion.emotion_type] = 1
-    return render_template('patientProfile.html', user = patient, allSessions = allSessions, latestSession = mostRecentSession, recentSessionEmotions = emotions_count)
+            return "Could not captured photo"
 
+# Route for handling the form subimssion of the PHQ-9 quiz. Also uses logic defined 
+# in forms.py for calculating the PHQ-9 score.
 @bp.route('/questionnaire', methods = ['GET', 'POST'])
-def PH9_Questionnaire():
-    questionnaire = PHQ9Form()
-    return render_template('PHQ-9.html', form = questionnaire)
-
-@bp.route('/specific/<int:id>')
-def specific(id):
-    session = SessionData.query.get(id)
-
-    emotional_score = session.emotional_score
-    emotions_count = {}
-    
-    for emotion in session.emotion_data:
-        if emotion.emotion_type in emotions_count:
-            emotions_count[emotion.emotion_type] += 1
-        else:
-            emotions_count[emotion.emotion_type] = 1 
-
-    emotion_data = EmotionData.query.filter_by(session_id = session.id).all()
-
-    return render_template('sessionDetails.html', score = emotional_score, emotion_data = emotion_data, emotions_count = emotions_count)
+def PHQ9_Questionnaire():
+    form = PHQ9Form()
+    if form.validate_on_submit():
+        score = form.calculate_score()
+        print(f"Your score is: {score}")
+        flash(f"Your score is: {score}")
+        return render_template('PHQ-9.html', form = form, score = score)
+    else:
+        print(form.errors)
+    return render_template('PHQ-9.html', form = form, score = None)

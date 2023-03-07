@@ -1,13 +1,12 @@
 var intervalId;
 
-function fetchData(){
-    return fetch('/predict')
-        .then((response) => {
-            return response.json();
-        })
-        .catch((error) => {
-            console.log('Something went wrong.')
-        });
+async function fetchData() {
+    try {
+        const response = await fetch('/predict');
+        return response.json();
+    } catch (error) {
+        console.log('Something went wrong.')
+    }
 }
 
 function displayMostCommonEmotion(data) {

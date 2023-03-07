@@ -14,7 +14,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     });
 }
 
-function upload(file){
+function upload(file) {
     var formdata = new FormData();
     formdata.append('snap', file);
 

@@ -1,30 +1,42 @@
 {% extends "base.html" %}
 {% block title %} Therapist Dashboard {% endblock %}
 
+{% block head %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.css') }}">
+
+{% endblock %}
+
+
 {% block content %}
 
 <h3> Welcome to your dashboard, {{therapist}}.</h3>
 
 <div id="patientInfo">
-    <table id="patientsTable">
+    <table id="tableDetails">
         <thead>
             <tr>
                 <th data-data="Patient Name">Patient Name</th>
                 <th data-data="Patients Email">Patients Email</th>
+                <th data-data="Patient Sessions">View Patients Sessions</th>
             </tr>
         </thead>
         <tbody>
             {% for patient in patients %}
             <tr>
-                <td>
-                    <a href="{{ url_for('admin.patientData', user_id=patient.id) }}">{{ patient.first_name }} {{
-                        patient.surname }}</a>
-                </td>
+                <td> {{ patient.first_name }} {{patient.surname }} </td>
                 <td> {{ patient.email}} </td>
+                <td>
+                    <a href="{{ url_for('admin.patientData', user_id=patient.id) }}">
+                        <button type="button" class="btn btn-secondary">View Further Details</button>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 {% endblock %}

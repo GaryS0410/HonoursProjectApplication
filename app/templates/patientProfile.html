@@ -3,41 +3,20 @@
 
 {% block head %}
 
-<style>
-    #sessionsTable {
-        background-color: #212429;
-        color: #c7c6cd;
-    }
-
-    #sessionsTable th {
-        background-color: #212429;
-        color: #c7c6cd;
-    }
-
-    #sessionsTable td {
-        background-color: #212429;
-        color: #c7c6cd;
-    }
-
-    .dataTables_wrapper .dataTables_paginate {
-        text-align: center;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        margin: 0 5px;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.css') }}">
 
 {% endblock %}
 
 {% block content %}
 
-<h3>{{ user.first_name }}'s User Profile </h3> <br />
+<h3>{{ user.first_name }}'s Previous Sessions </h3> <br />
+
+{% if allSessions %}
 
 <div class="row">
     <!-- Table of users latest sessions -->
     <div class="col-6">
-        <table id="sessionsTable">
+        <table id="tableDetails">
             <thead>
                 <tr>
                     <th> Session Date and Time </th>
@@ -78,6 +57,12 @@
     </div>
 </div>
 
+{% else %}
+
+<h4> You currently have no session data related to your account for you to view. Please conduct at least one therapy session for data to appear here.</h4>
+
+{% endif %}
+
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
 
 <script>
@@ -86,16 +71,14 @@
     var sessionData = {{ recentSessionEmotions | tojson }};
 
     createPieChart(ctx, sessionData);
-</script>
 
-<script>
     $(document).ready(function () {
-        $('#sessionsTable').DataTable({
+        $('#tableDetails').DataTable({
             searching: false,
             info: false,
             lengthChange: false
         });
-    });           
+    }); 
 </script>
 
 {% endblock %}

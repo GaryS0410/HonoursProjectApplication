@@ -1,14 +1,20 @@
 {% extends "base.html" %}
 
+{% block head %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.css') }}">
+
+{% endblock %}
+
 {% block content %}
 
 <h3> Details of Specific Session </h3>
 
 <h3> Emotional Score for this Session: {{ score }} </h3>
 
-<div class="row">
+<div class="row" style="height: 10vh">
     <div class="col-6">
-        <table id="sessionDetails">
+        <table id="tableDetails">
             <thead>
                 <tr>
                     <th> Emotion Captured </th>
@@ -43,6 +49,7 @@
 </div>
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 <script>
     var ctx = document.getElementById('mostRecentSession').getContext('2d');

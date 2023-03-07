@@ -1,0 +1,22 @@
+#tableDetails {
+    background-color: #212429;
+    color: #c7c6cd;
+}
+
+#tableDetails th {
+    background-color: #212429;
+    color: #c7c6cd;
+}
+
+#tableDetails td {
+    background-color: #212429;
+    color: #c7c6cd;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    text-align: center;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    margin: 0 5px;
+}

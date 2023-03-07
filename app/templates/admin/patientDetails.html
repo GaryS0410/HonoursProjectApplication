@@ -2,6 +2,12 @@
 
 {% block title %} Patient Details {% endblock %}
 
+{% block head %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.css') }}">
+
+{% endblock %}
+
 {% block content %}
 
 <h3> Patient: {{patient.first_name}} {{patient.surname}} </h3>
@@ -9,7 +15,7 @@
 <div class="row">
     <!-- Table of users latest sessions -->
     <div class="col-6">
-        <table id="sessionsTable">
+        <table id="tableDetails">
             <thead>
                 <tr>
                     <th> Time and Date </th>
@@ -24,7 +30,7 @@
                     <td> {{ session.emotional_score }} </td>
                     <td>
                         <a href="{{ url_for('admin.specificSession', id=session.id) }}">
-                            <button type="button" class="btn btn-dark">View Further Details</button>
+                            <button type="button" class="btn btn-secondary">View Further Details</button>
                         </a>
                     </td>
                 </tr>
@@ -51,6 +57,7 @@
 </div>
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 <script>
     var ctx = document.getElementById("recentSessionEmotions").getContext('2d');
