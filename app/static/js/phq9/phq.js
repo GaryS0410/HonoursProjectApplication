@@ -58,6 +58,8 @@ document.getElementById('snap').addEventListener('click', () => {
     takePhoto();
 })
 
+let form = document.getElementById('phq9-form');
+
 function showNextQuestion() {
     var currentQuestion = $(".question:visible");
     var nextQuestion = currentQuestion.next(".question");
@@ -70,6 +72,6 @@ function showNextQuestion() {
         nextQuestion.find("input").prop("disabled", false);
     } else {
         $(".question input").prop("disabled", false);
-        fetchData();
+        form.submit();
     }
 }

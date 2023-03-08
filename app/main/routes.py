@@ -143,7 +143,15 @@ def PHQ9_Questionnaire():
         score = form.calculate_score()
         print(f"Your score is: {score}")
         flash(f"Your score is: {score}")
-        # return render_template('PHQ-9.html', form = form, score = score)
+        print(score)
+        user = User.query.get(current_user.id)
+        user.phq9_score = score
+        db.session.commit()
+        return render_template('PHQ-9.html', form = form, score = score)
     else:
         print(form.errors)
     return render_template('PHQ-9.html', form = form, score = None)
+
+@bp.route('/testRoute')
+def testPage():
+    return render_template('testPage.html')

@@ -21,12 +21,15 @@ class SessionData(db.Model):
     emotion_data = db.relationship('EmotionData')
 
 class User(db.Model, UserMixin):
+    # User attributes
     id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String(50))
     surname = db.Column(db.String(50))
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(150))
     is_therapist = db.Column(db.Boolean)
+    phq9_score = db.Column(db.Integer, default=0)
+    # User relationships
     session_data = db.relationship('SessionData')
     patients = db.relationship('Association', foreign_keys = [Association.therapist_id], backref='therapist')
     therapist = db.relationship('Association', foreign_keys=[Association.patient_id], backref='patient', uselist=False)

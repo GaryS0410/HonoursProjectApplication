@@ -10,6 +10,7 @@
 {% block content %}
 
 <h3>{{ user.first_name }}'s Previous Sessions </h3> <br />
+<h3>Curent PHQ-9 Score: {{ user.phq9_score }}</h3>
 
 {% if allSessions %}
 
@@ -57,9 +58,22 @@
     </div>
 </div>
 
+<div class="col-6">
+    <div class="card-group d-flex flex-wrap">
+        <div class="card mb-3 d-inline-block">
+            <h5 class="card-title"> PHQ-9 </h5>
+            <div class="card-body">
+                <h5 class="card-title"> Current Score: {{user.phq9_score}} </h5>
+                <p>You have super depression</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% else %}
 
-<h4> You currently have no session data related to your account for you to view. Please conduct at least one therapy session for data to appear here.</h4>
+<h4> You currently have no session data related to your account for you to view. Please conduct at least one therapy
+    session for data to appear here.</h4>
 
 {% endif %}
 

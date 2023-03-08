@@ -65,3 +65,8 @@ document.getElementById('stop').addEventListener('click', () => {
     clearInterval(intervalId);
     getPrediction();
 })
+
+
+
+
+
