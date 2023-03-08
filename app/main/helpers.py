@@ -83,6 +83,18 @@ def calculateEmotionScore(emotions_count):
     else:
         return 'Negative'
 
+# PHQ-9 Scoreing function
+def phq9Score(score):
+    if score >= 0 and score <= 4:
+        message = "Your most recent PHQ-9 score suggests you have minimal levels of depression."
+    elif score >= 5 and score <= 9:
+        message = "Your most recent PHQ-9 score suggests you have may mild depression."
+    elif score >= 10 and score <= 14:
+        message = "Your score suggests you have have moderate depression. It would be beneficial to seek psychiatric treatmeant."
+    else:
+        message = "Your score suggests you have severe depression. Please seek psychiatric treatment as soon as possible"
+    return message
+
 # A function which saves the session data to the database for the patient and therapist user to 
 # look at later on. Used to be included within the endpoint, but the PHQ-9 quiz also makes use of
 # that function now, which is not saved to any database currently and is not involved in the 

@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 # Necessary imports from the application
 from app.models import SessionData, EmotionData
 from app.main import bp
+from .helpers import phq9Score
 from ..models import User
 
 # /profile endpoint which is used to display the users profile to them.
@@ -20,6 +21,8 @@ def profile():
 
     mostRecentSession = SessionData.query.filter_by(user_id = patient.id).order_by(SessionData.time_of_session.desc()).first()
 
+    message = phq9Score(current_user.phq9_score)
+
     emotions_count = {}
     if mostRecentSession is not None:
         for emotion in mostRecentSession.emotion_data:
@@ -27,7 +30,8 @@ def profile():
                 emotions_count[emotion.emotion_type] += 1
             else:
                 emotions_count[emotion.emotion_type] = 1
-    return render_template('patientProfile.html', user = patient, allSessions = allSessions, latestSession = mostRecentSession, recentSessionEmotions = emotions_count)
+    return render_template('patientProfile.html', user = patient, allSessions = allSessions, latestSession = mostRecentSession, recentSessionEmotions = emotions_count, 
+                           message = message)
 
 # /specific/id endpoint. This allows the user to view the details of a specific session
 # such as the emotionals score and all the emotions captured during said session. 

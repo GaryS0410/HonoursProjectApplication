@@ -143,7 +143,6 @@ def PHQ9_Questionnaire():
         score = form.calculate_score()
         print(f"Your score is: {score}")
         flash(f"Your score is: {score}")
-        print(score)
         user = User.query.get(current_user.id)
         user.phq9_score = score
         db.session.commit()

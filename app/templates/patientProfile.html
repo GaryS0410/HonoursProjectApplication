@@ -10,13 +10,20 @@
 {% block content %}
 
 <h3>{{ user.first_name }}'s Previous Sessions </h3> <br />
-<h3>Curent PHQ-9 Score: {{ user.phq9_score }}</h3>
 
 {% if allSessions %}
 
 <div class="row">
-    <!-- Table of users latest sessions -->
     <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block">
+                <h5 class="card-title"> PHQ-9 </h5>
+                <div class="card-body">
+                    <h5 class="card-title"> Current Score: {{user.phq9_score}} </h5>
+                    <p> {{ message }} </p>
+                </div>
+            </div>
+        </div>
         <table id="tableDetails">
             <thead>
                 <tr>
@@ -40,7 +47,6 @@
             </tbody>
         </table>
     </div>
-    <!-- Card displaying latest user session -->
     <div class="col-6">
         <div class="card-group d-flex flex-wrap">
             <div class="card mb-3 d-inline-block" style="width: 18rem;">
@@ -50,21 +56,10 @@
                     <h5 class="card-title">Date and Time of Session: </h5>
                     <h5> {{ latestSession.time_of_session }} </h5>
                     {% for emotion, count in recentSessionEmotions.items() %}
-                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.</p>
+                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
+                    </p>
                     {% endfor %}
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="col-6">
-    <div class="card-group d-flex flex-wrap">
-        <div class="card mb-3 d-inline-block">
-            <h5 class="card-title"> PHQ-9 </h5>
-            <div class="card-body">
-                <h5 class="card-title"> Current Score: {{user.phq9_score}} </h5>
-                <p>You have super depression</p>
             </div>
         </div>
     </div>
@@ -90,7 +85,8 @@
         $('#tableDetails').DataTable({
             searching: false,
             info: false,
-            lengthChange: false
+            lengthChange: false,
+            pageLength: 6
         });
     }); 
 </script>
