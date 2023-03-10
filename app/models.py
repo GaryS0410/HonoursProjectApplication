@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     is_therapist = db.Column(db.Boolean)
     phq9_score = db.Column(db.Integer, default=0)
+    phq9_emotional_score = db.Column(db.String(20))
     # User relationships
     session_data = db.relationship('SessionData')
     patients = db.relationship('Association', foreign_keys = [Association.therapist_id], backref='therapist')

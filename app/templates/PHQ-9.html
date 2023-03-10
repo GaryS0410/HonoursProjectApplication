@@ -4,7 +4,6 @@
 {% block head %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.css">
 
 {% endblock %}
 
@@ -12,7 +11,13 @@
 
 {% if score %}
 
-<h1> PHQ-9 Score: {{ score }}</h1>
+<h3> PHQ-9 Score: {{ score }}</h3>
+
+{% endif %}
+
+{% if phq9_emotional_score %}
+
+<h3> Emotional Score: {{phq9_emotional_score}}  </h3>
 
 {% endif %}
 
@@ -29,7 +34,7 @@
                         {{ form.question1 (name='question1')}} 
                     </fieldset>
                 </div>
-
+                
                 <div class="question" id="question2" style="display:none;">
                     <fieldset>
                         <label for="{{ form.question2.id }}">{{ form.question2.label }}</label>
@@ -85,14 +90,11 @@
                         {{ form.question9 (name='question9')}}
                     </fieldset>
                 </div>
-                <button class="btn btn-secondary" id="back" type="button">Previous</button>
+                <button class="btn btn-secondary" id="back" type="button" onclick="showPreviousQuestion()">Previous</button>
                 <button class="btn btn-secondary" id="snap" type="button" onclick="showNextQuestion()">Next</button>
             </form>
         </div>
     </div>
-</div>
-
-<div id="result">
 </div>
 
 <div class="webcam" style="" hidden>

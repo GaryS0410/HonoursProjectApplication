@@ -1,15 +1,10 @@
 # Necessary extension imports
 from flask import render_template, request, jsonify, flash, redirect, url_for
 import numpy as np
-from PIL import Image
-from tensorflow.keras.models import load_model
-import cv2
-from io import BytesIO
 from flask_login import login_required, current_user
 from datetime import datetime
 
 # Necessary application imports
-from app.models import SessionData, EmotionData
 from app.main import bp
 from .forms import PHQ9Form
 from ..models import User
@@ -19,10 +14,8 @@ from .helpers import *
 # The image_list variable is used to intialise a empty 4D numpy array which will be used to store
 # the webcam images. Is necessary to be a global variable due to multiple endpoint functions
 # needing access to it.
-# The mode variable makes use of the load_model function in order to load in the created machine
-# learning model from the ml_models folder.
 image_list = np.zeros((1, 48, 48, 1))
-model = load_model('app\ml_models\initalModel.h5')
+image_timestamps = []
 
 # Endpoint Functions
 
@@ -43,6 +36,7 @@ def index():
 @bp.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
+    global image_timestamps
     if request.method == 'POST':
         fs = request.files.get('snap').read()
         if fs:
@@ -58,32 +52,17 @@ def startSession():
 # contained within the image_list variable. Note: currently the first image is being removed due to 
 # the fact that the front-end function takes a picture when the button is pressed originally,
 # which we do not want.
-@bp.route('/predict', methods = ['GET'])
-def predict_emotion():
+@bp.route('/predict', methods=['GET'])
+def predict():
     if request.method == 'GET':
         global image_list
-        image_list = image_list[1:]
+        global image_timestamps
 
-        predictions = model.predict(image_list)
-        classes_x = np.argmax(predictions, axis = 1)
-
-        emotionNames = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
-        emotionLabels = emotionNames[classes_x]
-
-        emotion_list = emotionLabels.tolist()
-        emotionNames = emotionNames.tolist()
-        emotions_count = {}
-
-        for i in emotion_list:
-            if i in emotions_count:
-                emotions_count[i] += 1
-            else: 
-                emotions_count[i] = 1
-    
+        is_quiz = True
+        emotions_count, emotion_labels = predictImages(image_list, is_quiz)
         emotional_score = calculateEmotionScore(emotions_count)
-        saveSessionData(emotional_score, emotion_list)
 
-        flash('Session data has been saved', category='success')
+        saveSessionData(emotional_score, emotion_labels, image_timestamps)
 
         image_list = np.zeros((1, 48, 48, 1))
         image_timestamps = []
@@ -93,31 +72,39 @@ def predict_emotion():
 # /quizPredict endpoint, virtually identical to the /predict endpoint except currently used
 # for the PHQ-9 quiz functionality. It would be good if these could instead be combined into 
 # one function
-@bp.route('/quizPredict', methods=['GET', 'POST'])
+# def predictQuiz():
+#     global image_list
+#     predictions = model.predict(image_list)
+#     classes_x = np.argmax(predictions, axis = 1)
+
+#     emotionNames = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
+#     emotionLabels = emotionNames[classes_x]
+
+#     emotion_list = emotionLabels.tolist()
+#     emotionNames = emotionNames.tolist()
+#     emotions_count = {}
+
+#     for i in emotion_list:
+#         if i in emotions_count:
+#             emotions_count[i] += 1
+#         else: 
+#             emotions_count[i] = 1
+
+#     image_list = np.zeros((1, 48, 48, 1))
+
+#     return emotions_count
+
 def predictQuiz():
-    if request.method == 'GET':
-        global image_list
-        predictions = model.predict(image_list)
-        classes_x = np.argmax(predictions, axis = 1)
+    global image_list
 
-        emotionNames = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
-        emotionLabels = emotionNames[classes_x]
+    is_quiz = False
+    emotions_count, emotions_labels = predictImages(image_list, is_quiz)
+    image_list = np.zeros((1, 48, 48, 1))
 
-        emotion_list = emotionLabels.tolist()
-        emotionNames = emotionNames.tolist()
-        emotions_count = {}
+    print(emotions_count)
+    print(emotions_labels)
 
-        for i in emotion_list:
-            if i in emotions_count:
-                emotions_count[i] += 1
-            else: 
-                emotions_count[i] = 1
-        
-        image_list = np.zeros((1, 48, 48, 1))
-
-        print(emotions_count)
-
-        return jsonify(emotions_count=emotions_count)
+    return emotions_count
 
 # Endpoint for capturing images for the PHQ-9 quiz. Once again, very similiar to 
 # route for therapy session, would be beneficial if they could be combined into one
@@ -140,17 +127,19 @@ def getQuiz():
 def PHQ9_Questionnaire():
     form = PHQ9Form()
     if form.validate_on_submit():
-        score = form.calculate_score()
-        print(f"Your score is: {score}")
-        flash(f"Your score is: {score}")
         user = User.query.get(current_user.id)
+        emotions = predictQuiz()
+
+        score = form.calculate_score()
+        phq9_emotional_score = calculateEmotionScore(emotions)
+        print(phq9_emotional_score)
+
         user.phq9_score = score
+        user.phq9_emotional_score = phq9_emotional_score
+
+        db.session.add(user)
         db.session.commit()
-        return render_template('PHQ-9.html', form = form, score = score)
+        return render_template('PHQ-9.html', form = form, score = score, phq9_emotional_score = phq9_emotional_score)
     else:
         print(form.errors)
     return render_template('PHQ-9.html', form = form, score = None)
-
-@bp.route('/testRoute')
-def testPage():
-    return render_template('testPage.html')

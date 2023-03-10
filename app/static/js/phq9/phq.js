@@ -12,26 +12,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     });
 }
 
-function fetchData() {
-    return fetch('/quizPredict')
-        .then((response) => {
-            console.log(response);
-            return response.json();
-        })
-        .then((data) => {
-            let resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '';
-            for (const [emotion, count] of Object.entries(data.emotions_count)) {
-                let p = document.createElement('p');
-                p.innerHTML = "Emotion: " + emotion + " Instances of emotion: " + count;
-                resultDiv.appendChild(p);
-            }
-        })
-        .catch((error) => {
-            console.log('Something went wrong.')
-        });
-}
-
 function upload(file) {
     var formdata = new FormData();
     formdata.append('snap', file);
@@ -58,8 +38,6 @@ document.getElementById('snap').addEventListener('click', () => {
     takePhoto();
 })
 
-let form = document.getElementById('phq9-form');
-
 function showNextQuestion() {
     var currentQuestion = $(".question:visible");
     var nextQuestion = currentQuestion.next(".question");
@@ -72,6 +50,19 @@ function showNextQuestion() {
         nextQuestion.find("input").prop("disabled", false);
     } else {
         $(".question input").prop("disabled", false);
-        form.submit();
+        document.getElementById("phq9-form").submit();
+    }
+}
+
+function showPreviousQuestion() {
+    var currentQuestion = $(".question:visible");
+    var previousQuestion = currentQuestion.prev(".question");
+
+    if (previousQuestion.length) {
+        console.log("Previous question...")
+        currentQuestion.hide();
+        currentQuestion.find("input").prop("disabled", true);
+        previousQuestion.show();
+        previousQuestion.find("input").prop("disabled", false);
     }
 }

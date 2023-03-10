@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<h3>{{ user.first_name }}'s Previous Sessions </h3> <br />
+<h3>{{ user.first_name }}'s Patient Profile </h3> <br />
 
 {% if allSessions %}
 
@@ -17,10 +17,26 @@
     <div class="col-6">
         <div class="card-group d-flex flex-wrap">
             <div class="card mb-3 d-inline-block">
-                <h5 class="card-title"> PHQ-9 </h5>
+                <h4 class="card-title"> Current PHQ-9 Score Information </h4>
                 <div class="card-body">
                     <h5 class="card-title"> Current Score: {{user.phq9_score}} </h5>
                     <p> {{ message }} </p>
+                    {% if emotion_score %}
+                        {% if emotion_score == "Positive" %}
+                        <p> The images captured when you took the questionnaire point to a positive emotional state. This indictaes are less likely
+                            to be depressed, however if you have a high PHQ-9 score further action may still be required. </p>
+                        {% elif emotion_score == "Neutral" %}
+                        <p> The images captured when you took the questionnaire point to a neutral emotional state. This indicates a neutral attitude during the questonnaire, which could be taken either way. If a 
+                            high PHQ-9 score is also present, it is possible you could have depression but if it is low then it may be unlikely that you do.
+                        </p>
+                        {% else %}
+                        <p> The images captured when you took the questionnaire point to a negative emotional state. A negative attitude during the session could be a further indication of depression, especially if your
+                            PHQ-9 score is high. If that is the case you are advised to seek a medical professional about this issue.
+                        </p>
+                        {% endif %}
+                    {% else %}
+                    <p> No emotional score data found. </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -73,6 +89,7 @@
 {% endif %}
 
 <script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 <script>
     var ctx = document.getElementById('mostRecentSession').getContext('2d');
@@ -80,15 +97,6 @@
     var sessionData = {{ recentSessionEmotions | tojson }};
 
     createPieChart(ctx, sessionData);
-
-    $(document).ready(function () {
-        $('#tableDetails').DataTable({
-            searching: false,
-            info: false,
-            lengthChange: false,
-            pageLength: 6
-        });
-    }); 
 </script>
 
 {% endblock %}

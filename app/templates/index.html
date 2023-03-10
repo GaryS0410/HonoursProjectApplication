@@ -14,17 +14,16 @@
             <button id="snap" type="button" class="btn btn-dark">Start Session</button>
             <button id="stop" type="button" class="btn btn-dark">Stop Session</button>
             <button class="btn btn-dark dropdown-toggle" type="button" id="selectSessionLength" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
+                aria-haspopup="true" aria-expanded="false" onchange="setSessionLength()">
                 Select Session Length
             </button>
             <div class="dropdown-menu" aria-labelledby="selectSessionLength" id="sessionLengthDropdown">
-                <a class="dropdown-item" href="#">30 Minutes</a>
-                <a class="dropdown-item" href="#">60 Minutes</a>
+                <a class="dropdown-item" href="#" value="60000">15 Minutes</a>
+                <a class="dropdown-item" href="#" value="1800000">30 Minutes</a>
             </div>
         </div>
         <div class="col-md-6">
             <h2> Emotional Analysis </h2>
-            <h4 id="mostCommon">Your Most Common Emotion: </h4>
             <h4 id="emotionScore">Your Emotion Score is: </h4>
             <div class="results" id="results"></div>
             <canvas id="pieChartCanvas" width="640" height="480"></canvas>
@@ -33,6 +32,6 @@
 </div>
 
 <script src="..\static\js\camera.js"></script>
-<script src="..\static\js\prediction.js"></script>
+<!-- <script src="..\static\js\prediction.js"></script> -->
 
 {% endblock %}

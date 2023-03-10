@@ -12,8 +12,7 @@
 
 <h3> Patient: {{patient.first_name}} {{patient.surname}} </h3>
 
-<div class="row">
-    <!-- Table of users latest sessions -->
+<!-- <div class="row">
     <div class="col-6">
         <table id="tableDetails">
             <thead>
@@ -38,7 +37,6 @@
             </tbody>
         </table>
     </div>
-    <!-- Card displaying latest user session -->
     <div class="col-6">
         <div class="card-group d-flex flex-wrap">
             <div class="card mb-3 d-inline-block" style="width: 18rem;">
@@ -54,17 +52,85 @@
             </div>
         </div>
     </div>
+</div> 
+-->
+
+<div class="row">
+    <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block">
+                <h4 class="card-title"> Users PHQ-9 Score Information </h4>
+                <div class="card-body">
+                    <h5 class="card-title"> Current Score: {{patient.phq9_score}} </h5>
+                    <p> {{ message }} </p>
+                    {% if patient.phq9_emotional_score %}
+                        {% if emotion_score == "Positive" %}
+                        <p> The images captured when the patient took this questionnaire point to a positive emotional state. This indictaes they are less likely
+                            to be depressed, however if they have a high PHQ-9 score further action may still be required. </p>
+                        {% elif emotion_score == "Neutral" %}
+                        <p> The images captured when the patient took the questionnaire point to a neutral emotional state. This indicates a neutral attitude during the questonnaire, which could be taken either way. If a 
+                            high PHQ-9 score is also present, it is still possible the patient could have depression and further action may be required.
+                        </p>
+                        {% else %}
+                        <p> The images captured when you took the questionnaire point to a negative emotional state. A negative attitude during the session could be a further indication of depression, especially if your
+                            PHQ-9 score is high. If that is the case you are advised to seek a medical professional about this issue.
+                        </p>
+                        {% endif %}
+                    {% else %}
+                    <p> No emotional score data found. </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <table id="tableDetails">
+            <thead>
+                <tr>
+                    <th> Session Date and Time </th>
+                    <th> Overall Emotional Score </th>
+                    <th> Further Details </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in allSessions %}
+                <tr>
+                    <td> {{ session.time_of_session }} </td>
+                    <td> {{ session.emotional_score }} </td>
+                    <td>
+                        <a href="{{ url_for('main.specific', id=session.id) }}">
+                            <button type="button" class="btn btn-secondary">View Further Details</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block" style="width: 18rem;">
+                <h5 class="card-title">Patients Most Recent Session: </h5>
+                <canvas id="mostRecentSession" width="340" height="200"></canvas>
+                <div class="card-body">
+                    <h5 class="card-title">Date and Time of Session: </h5>
+                    <h5> {{ mostRecentSession.time_of_session }} </h5>
+                    {% for emotion, count in recentSessionEmotions.items() %}
+                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script>
+<script src="{{ url_for ('static', filename='js/pieChart.js') }}"></script> 
 <script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 <script>
-    var ctx = document.getElementById("recentSessionEmotions").getContext('2d');
+    var ctx = document.getElementById("mostRecentSession").getContext('2d');
     var sessionData = {{ recentSessionEmotions | tojson }};
 
     createPieChart(ctx, sessionData);
 </script>
-
 
 {% endblock %}

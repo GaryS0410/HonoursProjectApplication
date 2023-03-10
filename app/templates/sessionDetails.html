@@ -35,7 +35,7 @@
 <h3> Details of Specific Session </h3>
 
 <h3> Emotional Score for this Session: {{ score }} </h3>
-
+<!--
 <div class="row">
     <div class="row">
         <div class="col-6">
@@ -56,7 +56,6 @@
                 </tbody>
             </table>
         </div>
-        </row>
         <div class="col-6">
             <div class="card-group d-flex flex-wrap">
                 <div class="card mb-3 d-inline-block" style="width: 18rem;">
@@ -70,6 +69,51 @@
                         </p>
                         {% endfor %}
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div class="row">
+    <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block">
+                <h4 class="card-title"> Session Emotional Information </h4>
+                <div class="card-body">
+                    <h5 class="card-title"> Emotonal Score: {{session.emotional_score}} </h5>
+                </div>
+            </div>
+        </div>
+        <table id="sessionDetails">
+            <thead>
+                <tr>
+                    <th> Emotion Captured </th>
+                    <th> Timestamp </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emotion in emotion_data %}
+                <tr>
+                    <td> {{ emotion.emotion_type }} </td>
+                    <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-6">
+        <div class="card-group d-flex flex-wrap">
+            <div class="card mb-3 d-inline-block" style="width: 18rem;">
+                <h5 class="card-title"> Session Details: </h5>
+                <canvas id="mostRecentSession" width="340" height="200"></canvas>
+                <div class="card-body">
+                    <h5 class="card-title">Date and Time of Session: </h5>
+                    <h5> {{ session.time_of_session }} </h5>
+                    {% for emotion, count in emotions_count.items() %}
+                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
+                    </p>
+                    {% endfor %}
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ from PIL import Image
 import numpy as np
 from io import BytesIO
 from flask_login import current_user
+from tensorflow.keras.models import load_model
 
 # Importing necessary application imports
 from ..models import *
@@ -11,8 +12,8 @@ from ..models import *
 # Global Varaibles 
 # Face classifier loads in frontal facing haar cascade
 # Image timestamps is used to keep track of times at which webcam photos were taken
+model = load_model('app\ml_models\initalModel.h5')
 face_classifier = cv2.CascadeClassifier("app\ml_models\haarcascade_frontalface_default.xml")
-image_timestamps = []
 
 # Helper function which is used to pre-process the webcam images. Recolours the image to grayscale
 # and resizes it to 48 * 48. Also normalises the image by dividing by 255. Uses the haar cascade to crop
@@ -46,7 +47,28 @@ def preprocessImage(webcamImage):
         grey_image = np.expand_dims(grey_image, axis = 0)
         grey_image = np.expand_dims(grey_image, axis = -1)
             
-        return grey_image
+        return grey_image    
+
+def predictImages(images, is_quiz):
+    images = images[1:]
+
+    predictions = model.predict(images)
+    classes_X = np.argmax(predictions, axis = 1)
+
+    emotion_names = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
+    emotion_labels = emotion_names[classes_X]
+
+    emotion_labels = emotion_labels.tolist()
+    emotion_names = emotion_names.tolist()
+    emotions_count = {}
+
+    for i in emotion_labels:
+        if i in emotions_count:
+            emotions_count[i] += 1
+        else:
+            emotions_count[i] = 1
+
+    return(emotions_count, emotion_labels)        
 
 # Function used in order to calculate the overall emotional score of a session. Basically, it counts 
 # the amount of positive, neutral, and negative emotions and averages which ones were most prevalent.
@@ -71,7 +93,7 @@ def calculateEmotionScore(emotions_count):
 
     if total_count == 0:
         return None
-    
+     
     positive_percentage = positive_count / total_count
     neutral_percentage = neutral_count / total_count
     negative_percentage = negative_count / total_count
@@ -92,17 +114,21 @@ def phq9Score(score):
     elif score >= 10 and score <= 14:
         message = "Your score suggests you have have moderate depression. It would be beneficial to seek psychiatric treatmeant."
     else:
-        message = "Your score suggests you have severe depression. Please seek psychiatric treatment as soon as possible"
+        message = "Your score suggests you have severe depression. Please seek psychiatric treatment as soon as possible."
     return message
+
 
 # A function which saves the session data to the database for the patient and therapist user to 
 # look at later on. Used to be included within the endpoint, but the PHQ-9 quiz also makes use of
 # that function now, which is not saved to any database currently and is not involved in the 
 # therapy session data at all.
-def saveSessionData(emotional_score, emotion_list):
+def saveSessionData(emotional_score, emotion_list, image_timestamps):
     session_db = SessionData(user_id = current_user.id, emotional_score = emotional_score)
     db.session.add(session_db)
     db.session.commit()
+
+    print(emotion_list)
+    print(len(image_timestamps))
 
     for i, emotion in enumerate(emotion_list):
         emotion_db = EmotionData(emotion_type = emotion, time_captured = image_timestamps[i], session_id = session_db.id)
