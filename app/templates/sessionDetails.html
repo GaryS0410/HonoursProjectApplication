@@ -35,45 +35,6 @@
 <h3> Details of Specific Session </h3>
 
 <h3> Emotional Score for this Session: {{ score }} </h3>
-<!--
-<div class="row">
-    <div class="row">
-        <div class="col-6">
-            <table id="sessionDetails">
-                <thead>
-                    <tr>
-                        <th> Emotion Captured </th>
-                        <th> Timestamp </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for emotion in emotion_data %}
-                    <tr>
-                        <td> {{ emotion.emotion_type }} </td>
-                        <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="col-6">
-            <div class="card-group d-flex flex-wrap">
-                <div class="card mb-3 d-inline-block" style="width: 18rem;">
-                    <h5 class="card-title"> Session Details: </h5>
-                    <canvas id="mostRecentSession" width="340" height="200"></canvas>
-                    <div class="card-body">
-                        <h5 class="card-title">Date and Time of Session: </h5>
-                        <h5> {{ session.time_of_session }} </h5>
-                        {% for emotion, count in emotions_count.items() %}
-                        <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
-                        </p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
 
 <div class="row">
     <div class="col-6">
@@ -82,6 +43,23 @@
                 <h4 class="card-title"> Session Emotional Information </h4>
                 <div class="card-body">
                     <h5 class="card-title"> Emotonal Score: {{session.emotional_score}} </h5>
+                    {% if session.emotional_score == "Positive" %}
+                    <p> 
+                        Captured expression data during this session points to a generally positive demeanour during the session. This indicates that the session went well, and there
+                        minimal instances where the patient seemed outwardly upset.
+                    </p>
+                    {% elif session.emotional_score == "Neutral" %}
+                    <p>
+                        Captured expression data during this session points to a neutral demeanour during this session. This is not the strongest indicator of how the patient was feeling
+                        during the session. Therefore, only with a review of your notes and the timestamped emotions can a conclusion be made.
+                    </p>
+                    {% elif session.emotional_score == "Negative" %}
+                    <p>
+                        Captured expression data during this session points to a generally negative demeanour during this session. This indicates that the patient may have had some hard
+                        emotional moments during the session. This could indicate that issues discussed during this session were hard for the patient, and could be worth discussing in more 
+                        depth.
+                    </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
