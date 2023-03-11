@@ -62,3 +62,30 @@ def specificSession(id):
         return render_template('admin/specificSession.html', session = session, score=emotional_score, emotion_data = emotion_data, emotions_count = emotions_count)
     else:
         return "<h4> Not authorised </h4>"
+
+# Crud Operations
+@bp.route('/adminDashboard/deletePatient/<int:patient_id>', methods=['POST'])
+@login_required
+def delete_patient(patient_id):
+    if (current_user.is_therapist):
+        patient = User.query.get(patient_id)
+        associations = Association.query.filter_by(patient_id=patient_id).all()
+
+        # Deletes the users emotion data
+        for session in patient.session_data:
+            EmotionData.query.filter_by(session_id=session.id).delete()
+
+        # Deletes the users session data
+        SessionData.query.filter_by(user_id=patient_id).delete()
+
+        # Delete association between therapist and patient
+        for association in associations:
+            db.session.delete(association)
+
+        # Delete the patient
+        db.session.delete(patient)
+        db.session.commit()
+
+        return redirect(url_for('admin.adminDash'))
+    else:
+        return "<h4> Not authorised to perform this operation</h4>"

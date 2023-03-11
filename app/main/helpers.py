@@ -117,7 +117,6 @@ def phq9Score(score):
         message = "Your score suggests you have severe depression. Please seek psychiatric treatment as soon as possible."
     return message
 
-
 # A function which saves the session data to the database for the patient and therapist user to 
 # look at later on. Used to be included within the endpoint, but the PHQ-9 quiz also makes use of
 # that function now, which is not saved to any database currently and is not involved in the 

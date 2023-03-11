@@ -5,23 +5,79 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+<style>
+    .centered {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+</style>
+
 {% endblock %}
 
 {% block content %}
 
-{% if score %}
+{% if score and phq9_emotional_score %}
 
-<h3> PHQ-9 Score: {{ score }}</h3>
+<div class="container d-flex justify-content-center align-items-center centered" style="height: 50vh">
+    <div class="card mb-3" style="width: 50%">
+        <div class="card-header">
+            <h3 class="card-title"> Your PHQ-9 Results </h3>
+        </div>
+        <div class="card-body">
+            <p> Here are the results from your PHQ-9 questionnaire: </p>
+            <h5> PHQ-9 Score: {{ score }} </h5>
+            {% if score >= 0 and score <= 4 %}
+            <p> 
+                Based off of the results of the questionnaire it seems you hvae minimal levels of depression, meaning you most likely do not have the condition.
+            </p>
+            {% elif score >= 5 and score <= 9 %}
+            <p> 
+                Based off of the results of the questionnaire it seems you may have mild levels of depression. Although mild signs can seem as if they are not of concern it cloudflare
+                still be worth looking into, especially if your emotional score metric is either negative or neutral.
+            </p>
+            {% elif score >= 10 and score <= 14%}
+            <p> 
+                Based off of the results of the questionnaire it seems have moderate levels of depression. This means that you are likely to have the condition, especially if your emotional
+                score metric is either neutral or negative. Perhaps it would be beneficial if you looked further into treatment options, and perhaps spoke with a medical professional.
+            </p>
+            {% else %}
+            <p> 
+                Based off of the results of the questionnaire it seems you may have severe levels of depression. This means you are very likely to be depressed, it is advised that you talk to 
+                a loved one about your current worries and perhaps seek a medical professional in order to determine your diagnosis.
+            </p>
+            {% endif %}
+            <h5> Emotional Score: {{ phq9_emotional_score }} </h5>
+            {% if phq9_emotional_score == 'Positive' %}
+            <p>
+                Your expression data during the questionnaire seems to point towards a positive attitude. This indicates a happier, joyful attitude which means you may be less likely to have
+                depression. However, you should still be concerned if your PHQ-9 score is high and seek professional advice on the matter.
+            </p>
+            {% elif phq9_emotional_score == 'Neutral' %}
+            <p>
+                Your expression data during the questionnaire seems to point towards a neutral attitude. This indicates a more neutral attitude during the questionnaire, which can be interpretated
+                either way. Therefore, it is advisable that you take note of your PHQ-9 score and act on the advice given by it.
+            </p>
+            {% elif phq9_emotional_score == 'Negative' %}
+            <p>
+                Your expression data during the questionnaire seems to point towards a negative attitude. This indicates a sad, angry or scared attitude during the questionnaire, which is more likely
+                to point to depression than a positive or neutral attitude. Therefore, it is advisable to take further action such as speaking to a medical professional about your mental health struggles,
+                especially if your PHQ-9 score reflects this as well.
+            </p>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('main.PHQ9_Questionnaire') }}">
+                <button class="btn btn-secondary" id="retake" type="button"> Retake Questionnaire </button>
+            </a>
+        </div>
+    </div>
+</div>
 
-{% endif %}
+{% else %}
 
-{% if phq9_emotional_score %}
-
-<h3> Emotional Score: {{phq9_emotional_score}}  </h3>
-
-{% endif %}
-
-<div class="container d-flex justify-content-center align-items-center" style="height: 50vh">
+<div class="container d-flex justify-content-center align-items-center centered" style="height: 50vh">
     <div class="card" style="width: 50%">
         <div class="card-body">
             <h2 class="card-title">PHQ-9 Questionnaire</h2>
@@ -31,10 +87,10 @@
                 <div class="question" id="question1">
                     <fieldset>
                         <label for="{{ form.question1.id }}">{{ form.question1.label }}</label>
-                        {{ form.question1 (name='question1')}} 
+                        {{ form.question1 (name='question1')}}
                     </fieldset>
                 </div>
-                
+
                 <div class="question" id="question2" style="display:none;">
                     <fieldset>
                         <label for="{{ form.question2.id }}">{{ form.question2.label }}</label>
@@ -90,12 +146,15 @@
                         {{ form.question9 (name='question9')}}
                     </fieldset>
                 </div>
-                <button class="btn btn-secondary" id="back" type="button" onclick="showPreviousQuestion()">Previous</button>
+                <button class="btn btn-secondary" id="back" type="button"
+                    onclick="showPreviousQuestion()">Previous</button>
                 <button class="btn btn-secondary" id="snap" type="button" onclick="showNextQuestion()">Next</button>
             </form>
         </div>
     </div>
 </div>
+
+{% endif %}
 
 <div class="webcam" style="" hidden>
     <video id="video" width="640" height="480" autoplay></video>

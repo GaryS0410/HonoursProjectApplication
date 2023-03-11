@@ -49,6 +49,7 @@ function showNextQuestion() {
         nextQuestion.show();
         nextQuestion.find("input").prop("disabled", false);
     } else {
+        console.log("shallom shallom")
         $(".question input").prop("disabled", false);
         document.getElementById("phq9-form").submit();
     }

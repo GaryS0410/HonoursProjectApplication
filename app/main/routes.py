@@ -15,6 +15,7 @@ from .helpers import *
 # the webcam images. Is necessary to be a global variable due to multiple endpoint functions
 # needing access to it.
 image_list = np.zeros((1, 48, 48, 1))
+quiz_image_list = np.zeros((1, 48, 48, 1))
 image_timestamps = []
 
 # Endpoint Functions
@@ -69,37 +70,12 @@ def predict():
 
         return jsonify({'emotions_count': emotions_count, 'emotional_score': emotional_score})
 
-# /quizPredict endpoint, virtually identical to the /predict endpoint except currently used
-# for the PHQ-9 quiz functionality. It would be good if these could instead be combined into 
-# one function
-# def predictQuiz():
-#     global image_list
-#     predictions = model.predict(image_list)
-#     classes_x = np.argmax(predictions, axis = 1)
-
-#     emotionNames = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
-#     emotionLabels = emotionNames[classes_x]
-
-#     emotion_list = emotionLabels.tolist()
-#     emotionNames = emotionNames.tolist()
-#     emotions_count = {}
-
-#     for i in emotion_list:
-#         if i in emotions_count:
-#             emotions_count[i] += 1
-#         else: 
-#             emotions_count[i] = 1
-
-#     image_list = np.zeros((1, 48, 48, 1))
-
-#     return emotions_count
-
 def predictQuiz():
-    global image_list
+    global quiz_image_list
 
     is_quiz = False
-    emotions_count, emotions_labels = predictImages(image_list, is_quiz)
-    image_list = np.zeros((1, 48, 48, 1))
+    emotions_count, emotions_labels = predictImages(quiz_image_list, is_quiz)
+    quiz_image_list = np.zeros((1, 48, 48, 1))
 
     print(emotions_count)
     print(emotions_labels)
@@ -112,11 +88,11 @@ def predictQuiz():
 @bp.route('/quizGet', methods=['POST'])
 def getQuiz():
     if request.method == 'POST':
-        global image_list
+        global quiz_image_list
         fs = request.files.get('snap').read()
         if fs: 
             fs = preprocessImage(fs)
-            image_list = np.concatenate((image_list, fs), axis = 0)
+            quiz_image_list = np.concatenate((quiz_image_list, fs), axis = 0)
             return "Photo capturing"
         else:
             return "Could not captured photo"
