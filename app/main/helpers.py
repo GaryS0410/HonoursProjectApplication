@@ -49,8 +49,9 @@ def preprocessImage(webcamImage):
             
         return grey_image    
 
-def predictImages(images, is_quiz):
-    images = images[1:]
+def predictImages(images, is_therapy):
+    if is_therapy:
+        images = images[1:]
 
     predictions = model.predict(images)
     classes_X = np.argmax(predictions, axis = 1)

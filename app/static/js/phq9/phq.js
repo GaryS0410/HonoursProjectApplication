@@ -34,9 +34,9 @@ function takePhoto() {
     canvas.toBlob(upload, 'image/jpeg', 0.95);
 }
 
-document.getElementById('snap').addEventListener('click', () => {
-    takePhoto();
-})
+// document.getElementById('snap').addEventListener('click', () => {
+//     takePhoto();
+// })
 
 function showNextQuestion() {
     var currentQuestion = $(".question:visible");
@@ -49,7 +49,7 @@ function showNextQuestion() {
         nextQuestion.show();
         nextQuestion.find("input").prop("disabled", false);
     } else {
-        console.log("shallom shallom")
+        takePhoto();
         $(".question input").prop("disabled", false);
         document.getElementById("phq9-form").submit();
     }

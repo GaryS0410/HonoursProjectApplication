@@ -10,7 +10,7 @@ from .forms import PHQ9Form
 from ..models import User
 from .helpers import *
 
-# Necessary global variable declartions
+# Necessary global variable declarations
 # The image_list variable is used to intialise a empty 4D numpy array which will be used to store
 # the webcam images. Is necessary to be a global variable due to multiple endpoint functions
 # needing access to it.
@@ -59,8 +59,8 @@ def predict():
         global image_list
         global image_timestamps
 
-        is_quiz = True
-        emotions_count, emotion_labels = predictImages(image_list, is_quiz)
+        is_therapy = True
+        emotions_count, emotion_labels = predictImages(image_list, is_therapy)
         emotional_score = calculateEmotionScore(emotions_count)
 
         saveSessionData(emotional_score, emotion_labels, image_timestamps)
@@ -70,15 +70,13 @@ def predict():
 
         return jsonify({'emotions_count': emotions_count, 'emotional_score': emotional_score})
 
+@bp.route('/predictQuiz', methods=['GET'])
 def predictQuiz():
     global quiz_image_list
 
-    is_quiz = False
-    emotions_count, emotions_labels = predictImages(quiz_image_list, is_quiz)
+    is_therapy = False
+    emotions_count, emotions_labels = predictImages(quiz_image_list, is_therapy)
     quiz_image_list = np.zeros((1, 48, 48, 1))
-
-    print(emotions_count)
-    print(emotions_labels)
 
     return emotions_count
 
@@ -95,7 +93,7 @@ def getQuiz():
             quiz_image_list = np.concatenate((quiz_image_list, fs), axis = 0)
             return "Photo capturing"
         else:
-            return "Could not captured photo"
+            return "Could not  photo"
 
 # Route for handling the form subimssion of the PHQ-9 quiz. Also uses logic defined 
 # in forms.py for calculating the PHQ-9 score.
