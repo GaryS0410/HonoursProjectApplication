@@ -26,7 +26,7 @@
             <h3 class="card-title"> Your PHQ-9 Results </h3>
         </div>
         <div class="card-body">
-            <p> Here are the results from your PHQ-9 questionnaire: </p>
+            <p> The following is a detailing of your results from the PHQ-9 questionnaire </p>
             <h5> PHQ-9 Score: {{ score }} </h5>
             {% if score >= 0 and score <= 4 %}
             <p> 
@@ -48,7 +48,7 @@
                 a loved one about your current worries and perhaps seek a medical professional in order to determine your diagnosis.
             </p>
             {% endif %}
-            <h5> Emotional Score: {{ phq9_emotional_score }} </h5>
+            <h5> Expression Emotional Score: {{ phq9_emotional_score }} </h5>
             {% if phq9_emotional_score == 'Positive' %}
             <p>
                 Your expression data during the questionnaire seems to point towards a positive attitude. This indicates a happier, joyful attitude which means you may be less likely to have

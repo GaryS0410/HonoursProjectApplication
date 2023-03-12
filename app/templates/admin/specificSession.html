@@ -8,40 +8,43 @@
 
 {% block content %}
 
-<h3> Details of Specific Session </h3>
+<div class="container">
+    <h3> Details of Specific Session </h3>
 
-<h3> Emotional Score for this Session: {{ score }} </h3>
+    <h3> Emotional Score for this Session: {{ score }} </h3>
 
-<div class="row" style="height: 10vh">
-    <div class="col-6">
-        <table id="tableDetails">
-            <thead>
-                <tr>
-                    <th> Emotion Captured </th>
-                    <th> Timestamp </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for emotion in emotion_data %}
-                <tr>
-                    <td> {{ emotion.emotion_type }} </td>
-                    <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="col-6">
-        <div class="card-group d-flex flex-wrap">
-            <div class="card mb-3 d-inline-block" style="width: 18rem;">
-                <h5 class="card-title"> Session Details: </h5>
-                <canvas id="mostRecentSession" width="340" height="200"></canvas>
-                <div class="card-body">
-                    <h5 class="card-title">Date and Time of Session: </h5>
-                    <h5> {{ session.time_of_session }} </h5>
-                    {% for emotion, count in emotions_count.items() %}
-                    <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.</p>
+    <div class="row" style="height: 10vh">
+        <div class="col-6">
+            <table id="tableDetails">
+                <thead>
+                    <tr>
+                        <th> Emotion Captured </th>
+                        <th> Timestamp </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emotion in emotion_data %}
+                    <tr>
+                        <td> {{ emotion.emotion_type }} </td>
+                        <td> {{ emotion.time_captured.strftime('%H:%M:%S') }} </td>
+                    </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6">
+            <div class="card-group d-flex flex-wrap">
+                <div class="card mb-3 d-inline-block" style="width: 18rem;">
+                    <h5 class="card-title"> Session Details: </h5>
+                    <canvas id="mostRecentSession" width="340" height="200"></canvas>
+                    <div class="card-body">
+                        <h5 class="card-title">Date and Time of Session: </h5>
+                        <h5> {{ session.time_of_session }} </h5>
+                        {% for emotion, count in emotions_count.items() %}
+                        <p class="cardt-text"> There were {{ count }} instances of {{ emotion }} during this session.
+                        </p>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

@@ -10,48 +10,51 @@
 
 {% block content %}
 
-<br />
-<h3> Welcome to your dashboard, {{therapist}}.</h3>
-<br />
+<div class="container">
+    <br />
+    <h3> Welcome to your dashboard, {{therapist}}.</h3>
+    <br />
 
-<div id="patientInfo">
-    <table id="tableDetails">
-        <thead>
-            <tr>
-                <th data-data="Patient Name">Patient Name</th>
-                <th data-data="Patients Email">Patients Email</th>
-                <th data-data="Patient Sessions">View Patients Sessions</th>
-                <th data-data="Delete Patient">Delete Patient</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for patient in patients %}
-            <tr>
-                <td> {{ patient.first_name }} {{patient.surname }} </td>
-                <td> {{ patient.email}} </td>
-                <td>
-                    <a href="{{ url_for('admin.patientData', user_id=patient.id) }}">
-                        <button type="button" class="btn btn-secondary">View Further Details</button>
-                    </a>
-                </td>
-                <td>
-                    <form id="delete-form" action="{{ url_for('admin.delete_patient', patient_id = patient.id) }}" method="post">
-                        <button type="submit" class="btn btn-secondary">Delete Patient</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="patientInfo">
+        <table id="tableDetails">
+            <thead>
+                <tr>
+                    <th data-data="Patient Name">Patient Name</th>
+                    <th data-data="Patients Email">Patients Email</th>
+                    <th data-data="Patient Sessions">View Patients Sessions</th>
+                    <th data-data="Delete Patient">Delete Patient</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td> {{ patient.first_name }} {{patient.surname }} </td>
+                    <td> {{ patient.email}} </td>
+                    <td>
+                        <a href="{{ url_for('admin.patientData', user_id=patient.id) }}">
+                            <button type="button" class="btn btn-secondary">View Further Details</button>
+                        </a>
+                    </td>
+                    <td>
+                        <form id="delete-form" action="{{ url_for('admin.deleting_patient', patient_id = patient.id) }}"
+                            method="post">
+                            <button type="submit" class="btn btn-secondary">Delete Patient</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
 
 <script>
-    document.getElementById('delete-form').addEventListener('submit', function(event) {
+    document.getElementById('delete-form').addEventListener('submit', function (event) {
         event.preventDefault();
 
-        if(confirm('Are you sure you want to delete this patient and their associated data?')) {
+        if (confirm('Are you sure you want to delete this patient and their associated data?')) {
             this.submit();
         }
     });

@@ -21,6 +21,4 @@ def delete_patient(patient_id):
 
         # Delete the patient
         db.session.delete(patient)
-        db.session.commit()
-
-        return redirect(url_for('admin'))
+        db.session.commit() 

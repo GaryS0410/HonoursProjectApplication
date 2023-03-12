@@ -4,22 +4,7 @@ let video = document.querySelector('#video');
 var intervalId;
 
 // Time stuff
-let sessionLength = 0;
-let sessionStartTime = 0;
-
-// function startSessionLength() {
-//     const dropdown = document.getElementById('selectSessionLength');
-//     const selectOption = dropdown.options[dropdown.selectedIndex];
-//     sessionLength = parseInt(selectOption.value, 10);
-//     console.log(sessionLength);
-// }
-
-// function startSessionLength() {
-//     const dropdown = document.getElementById('selectSessionLength');
-//     const selectOption = dropdown.options[dropdown.selectedIndex];
-//     sessionLength = parseInt(selectOption.getAttribute('value'), 10);
-//     console.log(sessionLength);
-// }
+let sessionDuration = 0;
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
@@ -51,37 +36,29 @@ function upload(file) {
     })
 }
 
-// function takePhoto() {
-//     context.drawImage(video, 0, 0, 640, 480);
-//     canvas.toBlob(upload, 'image/jpeg', 0.95);
-// }
-
 function takePhoto() {
     context.drawImage(video, 0, 0, 640, 480);
     canvas.toBlob(upload, 'image/jpeg', 0.95);
 
-    // const currentTime = new Date().getTime();
-    // if (sessionStartTime > 0 && (sessionStartTime + sessionLength <= currentTime)) {
-    //     clearInterval(intervalId);
-    //     getPrediction();
-    // }
+    if (sessionDuration > 0 && new Date().getTime() - sessionStartTime >= sessionDuration) {
+        clearInterval(intervalId);
+        getPrediction();
+    }
 }
 
 document.getElementById('snap').addEventListener('click', () => {
-    intervalId = setInterval(takePhoto, 5000);
+    intervalId = setInterval(takePhoto, 30000);
     sessionStartTime = new Date().getTime();
 })
 
 function disableButtons() {
     document.getElementById('snap').disabled = true;
     document.getElementById('stop').disabled = true;
-    // document.getElementById('selectSessionLength').disabled = true;
 }
 
 function enableButtons() {
     document.getElementById('snap').disabled = false;
     document.getElementById('stop').disabled = false;
-    // document.getElementById('selectSessionLength').disabled = false;
 }
 
 async function fetchData() {
@@ -140,7 +117,6 @@ function getPrediction() {
     fetchData()
         .then(data => {
             displayEmotionScore(data.emotional_score);
-            // displayMostCommonEmotion(data);
             createPieChart(data);
         });
 }
@@ -150,6 +126,7 @@ document.getElementById('stop').addEventListener('click', () => {
     getPrediction();
 })
 
-// document.getElementById('selectSessionLength').addEventListener('click', () => {
-//     sessionStartTime = new Date().getTime();
-// });
+document.getElementById('sessionLengthDropdown').addEventListener('click', (event) => {
+    sessionDuration = parseInt(event.target.getAttribute('value'));
+})
+

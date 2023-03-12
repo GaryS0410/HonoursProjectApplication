@@ -50,6 +50,33 @@ def preprocessImage(webcamImage):
         return grey_image    
 
 def predictImages(images, is_therapy):
+    images = np.array(images)
+
+    if is_therapy:
+        images = images[1:]
+
+    predictions = model.predict(images)
+    classes_X = np.argmax(predictions, axis = 1)
+
+    emotion_names = np.array(['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'])
+    emotion_labels = emotion_names[classes_X]
+
+    emotion_labels = emotion_labels.tolist()
+    emotion_names = emotion_names.tolist()
+    emotions_count = {}
+
+    for i in emotion_labels:
+        if i in emotions_count:
+            emotions_count[i] += 1
+        else:
+            emotions_count[i] = 1
+    
+    if is_therapy:
+        return(emotions_count, emotion_labels)        
+    else: 
+        return(emotions_count)
+
+def predictImages(images, is_therapy):
     if is_therapy:
         images = images[1:]
 
@@ -69,8 +96,8 @@ def predictImages(images, is_therapy):
         else:
             emotions_count[i] = 1
 
-    return(emotions_count, emotion_labels)        
-
+    return(emotions_count, emotion_labels)
+    
 # Function used in order to calculate the overall emotional score of a session. Basically, it counts 
 # the amount of positive, neutral, and negative emotions and averages which ones were most prevalent.
 def calculateEmotionScore(emotions_count):
@@ -103,8 +130,10 @@ def calculateEmotionScore(emotions_count):
         return 'Positive'
     elif neutral_percentage > positive_percentage and neutral_percentage > negative_percentage:
         return 'Neutral'
-    else:
+    elif negative_percentage > positive_percentage and negative_percentage > neutral_percentage:
         return 'Negative'
+    else: 
+        return 'Neutral'
 
 # PHQ-9 Scoreing function
 def phq9Score(score):

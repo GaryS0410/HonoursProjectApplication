@@ -3,6 +3,6 @@ $(document).ready(function () {
         searching: false,
         info: false,
         lengthChange: false,
-        pageLength: 5
+        pageLength: 6
     });
 }); 

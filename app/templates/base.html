@@ -42,7 +42,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">Honours Project Application</a>
+        <a class="navbar-brand" href="#">Honours Emotional Recognition Application</a>
         <div class="collapse navbar-collapse" id="navbar">
             <div class="navbar-nav">
                 {% if current_user.is_authenticated and current_user.is_therapist %}
@@ -52,10 +52,11 @@
                 <a class="nav-item nav-link" id="model" href="/">Therapy Session</a>
                 <a class="nav-item nav-link" id="phq9" href="/questionnaire">PHQ-9 Questionnaire</a>
                 <a class="nav-item nav-link" id="userprofile" href="/profile">Patient Profile</a>
+                <a class="nav-item nav-link" id="resources" href="/resources">Mental Health Resources</a>
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                 {% else %}
-                <a class="nav-item nav-link" id="model" href="/">FER Model</a>
                 <a class="nav-item nav-link" id="registerChoice" href="/registerChoice">Create Account</a>
+                <a class="nav-item nav-link" id="resources" href="/resources">Mental Health Resources</a>
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>
                 {% endif %}
             </div>
@@ -85,9 +86,7 @@
     {% endwith %}
 
     <main>
-        <div class="container">
             {% block content %} {% endblock %}
-        </div>
     </main>
 
 </body>

@@ -1,5 +1,5 @@
 # Necessary extension imports
-from flask import render_template, request, jsonify, flash, redirect, url_for
+from flask import render_template, request, jsonify, redirect, url_for
 import numpy as np
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -10,20 +10,14 @@ from .forms import PHQ9Form
 from ..models import User
 from .helpers import *
 
-# Necessary global variable declarations
-# The image_list variable is used to intialise a empty 4D numpy array which will be used to store
-# the webcam images. Is necessary to be a global variable due to multiple endpoint functions
-# needing access to it.
+# Global variabels
 image_list = np.zeros((1, 48, 48, 1))
 quiz_image_list = np.zeros((1, 48, 48, 1))
 image_timestamps = []
 
 # Endpoint Functions
 
-# Route for the root of the application and the first page the user sees. If the user is a patient
-# they will be directer to the webcam with the ability to start and stop a session, whereas a
-# therapist user be be directed to the admin dashboard, wherein they will be able to see a list 
-# of their associated patients 
+# Route for root of application
 @bp.route('/')
 @login_required
 def index():
@@ -31,9 +25,7 @@ def index():
         return redirect(url_for('admin.adminDash'))
     return render_template('index.html', user=current_user)
 
-# The /startSession endpoint, which is used to capture an image from the front-end and append it
-# to the global image_list variable. This variable is used by another function to make predictions
-# on the images captured.
+# /startSession endpoint, takes images for therapy sessions
 @bp.route('/startSession', methods = ['GET', 'POST'])
 def startSession():
     global image_list
@@ -49,10 +41,7 @@ def startSession():
         else:
             return 'Could not capture photo.'
 
-# The /predict endpoint. The predict_emotion function is used to make predictions on all images
-# contained within the image_list variable. Note: currently the first image is being removed due to 
-# the fact that the front-end function takes a picture when the button is pressed originally,
-# which we do not want.
+# The /predict endpoint, used to predict on therapy images
 @bp.route('/predict', methods=['GET'])
 def predict():
     if request.method == 'GET':
@@ -80,9 +69,6 @@ def predictQuiz():
 
     return emotions_count
 
-# Endpoint for capturing images for the PHQ-9 quiz. Once again, very similiar to 
-# route for therapy session, would be beneficial if they could be combined into one
-# thing.
 @bp.route('/quizGet', methods=['POST'])
 def getQuiz():
     if request.method == 'POST':
@@ -95,8 +81,6 @@ def getQuiz():
         else:
             return "Could not  photo"
 
-# Route for handling the form subimssion of the PHQ-9 quiz. Also uses logic defined 
-# in forms.py for calculating the PHQ-9 score.
 @bp.route('/questionnaire', methods = ['GET', 'POST'])
 def PHQ9_Questionnaire():
     form = PHQ9Form()
@@ -117,3 +101,7 @@ def PHQ9_Questionnaire():
     else:
         print(form.errors)
     return render_template('PHQ-9.html', form = form, score = None)
+
+@bp.route('/resources')
+def resource_page():
+    return render_template('resources.html')
