@@ -34,6 +34,13 @@ def registerTherapist():
             return redirect(url_for('admin.adminDash'))
     return render_template('auth/registerTherapist.html', form=form)
 
+@bp.route('/registerTherapist', methods=['GET', 'POST'])
+def registerTherapist():
+    form = RegisterTherapist()
+
+    if form.validate_on_submit():
+        user = 
+
 @bp.route('/registerPatient', methods=['GET', 'POST'])
 def registerPatient():
     form = RegisterPatientForm()
