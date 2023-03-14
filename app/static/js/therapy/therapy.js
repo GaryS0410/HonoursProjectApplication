@@ -87,6 +87,18 @@ function createPieChart(data) {
     const labels = Object.keys(emotionsCount);
     const values = Object.values(emotionsCount);
 
+    var emotion_colours = {
+        "angry": "red",
+        "disgust": "green",
+        "fear": "black",
+        "happy": "yellow",
+        "sad": "blue",
+        "surprise": "pink",
+        "neutral": "orange"
+    }
+
+    var label_colours = labels.map(label => emotion_colours[label]);
+
     var display = document.getElementById('pieChartCanvas');
     var context = display.getContext("2d");
     context.clearRect(0, 0, display.width, display.height);
@@ -97,7 +109,7 @@ function createPieChart(data) {
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: ["blue", "red", "yellow", "orange", "pink", "purple", "green"]
+                backgroundColor: label_colours
             }]
         },
         options: {

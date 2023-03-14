@@ -55,6 +55,7 @@
                         <th> Session Date and Time </th>
                         <th> Overall Emotional Score </th>
                         <th> Further Details </th>
+                        <th> Delete Session </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,9 +64,14 @@
                         <td> {{ session.time_of_session }} </td>
                         <td> {{ session.emotional_score }} </td>
                         <td>
-                            <a href="{{ url_for('main.specific', id=session.id) }}">
-                                <button type="button" class="btn btn-secondary">View Further Details</button>
+                            <a href="{{ url_for('admin.specificSession', id=session.id) }}">
+                                <button type="button" class="btn btn-secondary">View Details</button>
                             </a>
+                        </td>
+                        <td>
+                            <form id="delete-session-form" action="{{ url_for('admin.deleteSession', session_id = session.id) }}">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
